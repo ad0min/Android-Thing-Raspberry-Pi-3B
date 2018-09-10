@@ -42,10 +42,30 @@ public class MainActivity extends Activity {
     private static final double PULSE_CHANGE_PER_STEP_MS = 0.2;
     private static final int INTERVAL_BETWEEN_STEPS_MS = 10;
 
+    private static final int DELAY_LED_TIME = 1000;
+
+    private static final String RED_LED_PORT = "BCM4";
+    private static final String GREEN_LED_PORT = "BCM17";
+    private static final String BLUE_LED_PORT = "BCM27";
+
+    private static final String BUTTON_PORT = "BCM16";
+
     private Handler mHandler = new Handler();
     private Pwm mPwm;
     private boolean mIsPulseIncreasing = true;
     private double mActivePulseDuration;
+
+    private Gpio mLedGpioRed;
+    private Gpio mLedGpioGreen;
+    private Gpio mLedGpioBlue;
+
+    private Gpio mGpioButton;
+
+    private boolean mLedStateRed = false;
+    private boolean mLedStateGreen =false;
+    private boolean mLedStateBlue = false;
+
+    private int key = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +83,38 @@ public class MainActivity extends Activity {
             mPwm.setPwmDutyCycle(mActivePulseDuration);
             mPwm.setEnabled(true);
 
+
+            mLedGpioRed = PeripheralManager.getInstance().openGpio(RED_LED_PORT);
+            mLedGpioGreen = PeripheralManager.getInstance().openGpio(GREEN_LED_PORT);
+            mLedGpioBlue = PeripheralManager.getInstance().openGpio(BLUE_LED_PORT);
+
+            mLedGpioRed.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+            mLedGpioBlue.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+            mLedGpioGreen.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
+
+            mGpioButton = PeripheralManager.getInstance().openGpio(BUTTON_PORT);
+            mGpioButton.setDirection(Gpio.DIRECTION_IN);
+            mGpioButton.setEdgeTriggerType(Gpio.EDGE_BOTH);
+            mGpioButton.registerGpioCallback(new GpioCallback() {
+                @Override
+                public boolean onGpioEdge(Gpio gpio) {
+                    try {
+                        Log.d(TAG, "Button state: " + gpio.getValue());
+                        if (gpio.getValue())
+                            key +=1;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    return true;
+                }
+            });
+
+
             // Post a Runnable that continuously change PWM pulse width, effectively changing the
             // servo position
-            Log.d(TAG, "Start changing PWM pulse");
+//            Log.d(TAG, "Start changing PWM pulse vs Led ...");
             mHandler.post(mChangePWMRunnable);
+            mHandler.post(mBrightnessRunnable);
         } catch (IOException e) {
             Log.e(TAG, "Error on PeripheralIO API", e);
         }
@@ -81,10 +129,18 @@ public class MainActivity extends Activity {
         Log.i(TAG, "Closing port");
         try {
             mPwm.close();
+            mLedGpioRed.close();
+            mLedGpioGreen.close();
+            mLedGpioBlue.close();
+            mGpioButton.close();
         } catch (IOException e) {
             Log.e(TAG, "Error on PeripheralIO API", e);
         } finally {
             mPwm = null;
+            mLedGpioRed = null;
+            mLedGpioGreen = null;
+            mLedGpioBlue = null;
+            mGpioButton =null;
         }
     }
 
@@ -116,7 +172,7 @@ public class MainActivity extends Activity {
                 mIsPulseIncreasing = !mIsPulseIncreasing;
             }
 
-            Log.d(TAG, "Changing PWM active pulse duration to " + mActivePulseDuration + " ms");
+//            Log.d(TAG, "Changing PWM active pulse duration to " + mActivePulseDuration + " ms");
 
             try {
 
@@ -131,4 +187,39 @@ public class MainActivity extends Activity {
             }
         }
     };
+
+    private Runnable mBrightnessRunnable = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                switch (key%3) {
+                    case 0:
+                        mLedStateRed = true;
+                        mLedStateBlue = false;
+                        mLedStateGreen = false;
+                        break;
+                    case 1:
+                        mLedStateBlue = true;
+                        mLedStateRed = false;
+                        mLedStateGreen = false;
+                        break;
+                    case 2:
+                        mLedStateGreen = true;
+                        mLedStateRed = false;
+                        mLedStateBlue = false;
+                        break;
+                }
+//                key +=1;
+                Log.d(TAG, "key for "+ key);
+                mLedGpioRed.setValue(mLedStateRed);
+                mLedGpioBlue.setValue(mLedStateBlue);
+                mLedGpioGreen.setValue(mLedStateGreen);
+                mHandler.postDelayed(this, DELAY_LED_TIME);
+            }catch (IOException e){
+                Log.d(TAG, "Error exception  " + e);
+            }
+        }
+    };
+
+
 }
