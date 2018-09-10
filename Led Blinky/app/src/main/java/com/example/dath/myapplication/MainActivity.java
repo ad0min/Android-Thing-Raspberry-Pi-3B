@@ -8,6 +8,7 @@ import android.util.Log;
 import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.GpioCallback;
 import com.google.android.things.pio.PeripheralManager;
+import com.google.android.things.pio.Pwm;
 
 import java.io.IOException;
 
@@ -32,111 +33,102 @@ import java.io.IOException;
  */
 public class MainActivity extends Activity {
     private static final String TAG = "MainActivity";
+    // Parameters of the servo PWM
+    private static final double MIN_ACTIVE_PULSE_DURATION_MS = 1;
+    private static final double MAX_ACTIVE_PULSE_DURATION_MS = 10;
+    private static final double PULSE_PERIOD_MS = 10;  // Frequency of 50Hz (1000/20)
+
+    // Parameters for the servo movement over time
+    private static final double PULSE_CHANGE_PER_STEP_MS = 0.2;
+    private static final int INTERVAL_BETWEEN_STEPS_MS = 10;
 
     private Handler mHandler = new Handler();
-    private Gpio mLedGpioRed;
-    private Gpio mLedGpioGreen;
-    private Gpio mLedGpioBlue;
-    private Gpio mButton;
-    private boolean mStateRed = false;
-    private boolean mStateGreen = false;
-    private boolean mStateBlue = false;
-    private boolean mLedState = false;
-    private int count = 1;
-    private int timer = 2000;
+    private Pwm mPwm;
+    private boolean mIsPulseIncreasing = true;
+    private double mActivePulseDuration;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.i(TAG, "Starting BlinkActivity");
+        Log.i(TAG, "Starting PwmActivity");
+
         try {
-            String pinName = BoardDefault.getGPIOForLED();
-            mLedGpioRed = PeripheralManager.getInstance().openGpio("BCM6");
-            mLedGpioGreen = PeripheralManager.getInstance().openGpio("BCM17");
-            mLedGpioBlue = PeripheralManager.getInstance().openGpio("BCM27");
-            mButton = PeripheralManager.getInstance().openGpio("BCM16");
+            String pinName = "PWM1";
+            mActivePulseDuration = MIN_ACTIVE_PULSE_DURATION_MS;
 
-            mLedGpioRed.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
-            mLedGpioBlue.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
-            mLedGpioGreen.setDirection(Gpio.DIRECTION_OUT_INITIALLY_LOW);
-            mButton.setDirection(Gpio.DIRECTION_IN);
-            mButton.setActiveType(Gpio.ACTIVE_HIGH);
-            mButton.setEdgeTriggerType(Gpio.EDGE_BOTH);
+            mPwm = PeripheralManager.getInstance().openPwm(pinName);
 
-            mButton.registerGpioCallback(mGpioCallback);
-            Log.i(TAG, "Start blinking LED GPIO pin");
-            mHandler.post(mBlinkRunnable);
-        }catch (IOException e) {
+            // Always set frequency and initial duty cycle before enabling PWM
+            mPwm.setPwmFrequencyHz(1000 / PULSE_PERIOD_MS);
+            mPwm.setPwmDutyCycle(mActivePulseDuration);
+            mPwm.setEnabled(true);
+
+            // Post a Runnable that continuously change PWM pulse width, effectively changing the
+            // servo position
+            Log.d(TAG, "Start changing PWM pulse");
+            mHandler.post(mChangePWMRunnable);
+        } catch (IOException e) {
             Log.e(TAG, "Error on PeripheralIO API", e);
         }
     }
 
     @Override
-    protected void onDestroy(){
+    protected void onDestroy() {
         super.onDestroy();
+        // Remove pending Runnable from the handler.
+        mHandler.removeCallbacks(mChangePWMRunnable);
+        // Close the PWM port.
+        Log.i(TAG, "Closing port");
         try {
-            mLedGpioRed.close();
-            mLedGpioGreen.close();
-            mLedGpioBlue.close();
-            mButton.unregisterGpioCallback(mGpioCallback);
-            mButton.close();
-        }catch (IOException e){
-            Log.e(TAG, "Error on PeripheralIO API ", e);
-        }finally {
-            mLedGpioRed = null;
-            mLedGpioBlue = null;
-            mLedGpioGreen = null;
+            mPwm.close();
+        } catch (IOException e) {
+            Log.e(TAG, "Error on PeripheralIO API", e);
+        } finally {
+            mPwm = null;
         }
     }
 
-    private Runnable mBlinkRunnable = new Runnable() {
+    private Runnable mChangePWMRunnable = new Runnable() {
         @Override
         public void run() {
-            if(mLedGpioRed == null || mLedGpioBlue == null || mLedGpioBlue == null || mButton == null) {
+            // Exit Runnable if the port is already closed
+            if (mPwm == null) {
+                Log.w(TAG, "Stopping runnable since mPwm is null");
                 return;
             }
-            try {
-                count +=1;
-                mStateRed = count % 2 == 1;
-                mStateGreen = count/2 %2 == 1;
-                mStateBlue = count/4 %2 ==1;
-                mLedGpioRed.setValue(mStateRed);
-                mLedGpioGreen.setValue(mStateGreen);
-                mLedGpioBlue.setValue(mStateBlue);
-                Log.d(TAG, "State set to "+ count);
-                mHandler.postDelayed(mBlinkRunnable, timer);
-            }catch (IOException e){
-                Log.e(TAG, "Error on PeripheralIO API "+ e);
+
+            // Change the duration of the active PWM pulse, but keep it between the minimum and
+            // maximum limits.
+            // The direction of the change depends on the mIsPulseIncreasing variable, so the pulse
+            // will bounce from MIN to MAX.
+            if (mIsPulseIncreasing) {
+                mActivePulseDuration += PULSE_CHANGE_PER_STEP_MS;
+            } else {
+                mActivePulseDuration -= PULSE_CHANGE_PER_STEP_MS;
             }
-        }
-    };
-    private GpioCallback mGpioCallback = new GpioCallback() {
-        @Override
-        public boolean onGpioEdge(Gpio gpio) {
-            try {
-                Log.d(TAG, gpio.getValue()+ " pins ");
-                if (gpio.getValue()) {
-                    switch (timer){
-                        case 2000:
-                            timer = 1000;
-                            break;
-                        case 1000:
-                            timer = 500;
-                            break;
-                        case 500:
-                            timer = 100;
-                            break;
-                        default:
-                            timer = 2000;
-                    }
-                }
-            }catch (IOException e){
-                Log.w(TAG, e);
+
+            // Bounce mActivePulseDuration back from the limits
+            if (mActivePulseDuration > MAX_ACTIVE_PULSE_DURATION_MS) {
+                mActivePulseDuration = MAX_ACTIVE_PULSE_DURATION_MS;
+                mIsPulseIncreasing = !mIsPulseIncreasing;
+            } else if (mActivePulseDuration < MIN_ACTIVE_PULSE_DURATION_MS) {
+                mActivePulseDuration = MIN_ACTIVE_PULSE_DURATION_MS;
+                mIsPulseIncreasing = !mIsPulseIncreasing;
             }
-            return  true;
-        }
-        @Override
-        public void onGpioError(Gpio gpio, int error) {
-            Log.w(TAG, gpio + ": Error event" + error);
+
+            Log.d(TAG, "Changing PWM active pulse duration to " + mActivePulseDuration + " ms");
+
+            try {
+
+                // Duty cycle is the percentage of active (on) pulse over the total duration of the
+                // PWM pulse
+                mPwm.setPwmDutyCycle(100 * mActivePulseDuration / PULSE_PERIOD_MS);
+
+                // Reschedule the same runnable in {@link #INTERVAL_BETWEEN_STEPS_MS} milliseconds
+                mHandler.postDelayed(this, INTERVAL_BETWEEN_STEPS_MS);
+            } catch (IOException e) {
+                Log.e(TAG, "Error on PeripheralIO API", e);
+            }
         }
     };
 }
