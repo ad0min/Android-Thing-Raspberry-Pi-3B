@@ -107,7 +107,9 @@ public class MainActivity extends Activity {
                     }
                     return true;
                 }
-            });
+            });2. Get input from a button and then change the pace of color displaying (ex 1). For example, the RGB LED changes colors in 2s by default. After a button is pressed, the rate will change to 1s, then 0.5s, 0.1s and back to 2s.
+
+
 
 
             // Post a Runnable that continuously change PWM pulse width, effectively changing the
