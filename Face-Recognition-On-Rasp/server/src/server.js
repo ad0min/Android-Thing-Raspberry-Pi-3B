@@ -5,8 +5,6 @@ var bodyParser = require('body-parser');
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/";
 
-
-
 function connectMongo(callback){
 	MongoClient.connect(url, function(err, db) {
 	  if (err) throw err;
@@ -41,7 +39,7 @@ app.get('/login',function(req,res){
 })
 
 app.get('/', function (req, res) {
-	res.sendFile( __dirname + "/" + "index.html" );
+	res.sendFile( __dirname + "/view/index.html" );
 })
 
 var server = app.listen(80, function () {
