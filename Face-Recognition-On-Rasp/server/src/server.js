@@ -149,6 +149,10 @@ app.post('/logout', function (req, res) {
 	checklogin = false;
 	return res.redirect('/');
 })
+
+app.get('/add-person',(req,res)=>{
+	res.render('add-user');
+});
 app.get('/', function (req, res) {
 	res.render("index");
 })

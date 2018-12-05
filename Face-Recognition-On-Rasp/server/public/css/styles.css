@@ -24,6 +24,10 @@
     height: 10em;
 }
 
+.person-image-thumbnail{
+    background: #9152f8;
+}
+
 @media (max-width: 678px) {
     .user-item-image{
         width: 5em;
