@@ -42,7 +42,7 @@ app.post('/check_login', urlencodedParser, function (req, res) {
 
 
 app.get('/home', function (req, res) {
-	res.sendFile(__dirname + "/views/home.html");
+	res.render("home");
 })
 
 app.get('/log',function(req,res){
@@ -57,26 +57,26 @@ app.get('/log',function(req,res){
 		},
 		{
 			date: "04/12/2018",
-			time: "12:03:00",
+			time: "13:03:00",
+			username: "Duong Vong",
+			userId: 12,
+			status: 2,
+			image: "link",
+		},
+		{
+			date: "04/12/2018",
+			time: "20:03:00",
 			username: "Khanh Tran",
 			userId: 12,
 			status: 0,
 			image: "link",
 		},
 		{
-			date: "04/12/2018",
-			time: "12:03:00",
-			username: "Khanh Tran",
+			date: "12/12/2018",
+			time: "21:03:00",
+			username: "Nguyen Thanh Dat",
 			userId: 12,
-			status: 0,
-			image: "link",
-		},
-		{
-			date: "04/12/2018",
-			time: "12:03:00",
-			username: "Khanh Tran",
-			userId: 12,
-			status: 0,
+			status: 1,
 			image: "link",
 		},{
 			date: "04/12/2018",
@@ -88,12 +88,61 @@ app.get('/log',function(req,res){
 		}
 	]
 
-	res.render("pages/log.ejs",{logs:log});
+	res.render("log",{logs:log});
 });
 
 app.get('/user',function(req,res){
-
-	res.sendFile(__dirname + "/views/user.html");
+	const user = [
+		{
+			id: 0,
+			name: "Khanh Tran",
+			images: [
+				"https://www.washingtonpost.com/resizer/LUH1ZaouWY3_h0necP-XrTxa9K0=/200x200/s3.amazonaws.com/arc-authors/washpost/c68f3967-dcae-4e2b-9bea-db3ed9928896.png",
+				"https://i.kinja-img.com/gawker-media/image/upload/s--Tg_qqR3r--/c_scale,f_auto,fl_progressive,q_80,w_800/dnmtn4ksijwyep0xmljk.jpg",
+				"https://pbs.twimg.com/profile_images/1717956431/BP-headshot-fb-profile-photo_400x400.jpg",
+				"http://img.timeinc.net/time/photoessays/2008/people_who_mattered/obama_main_1216.jpg",
+				"https://www.utoronto.ca/sites/default/files/2018-11-13-dementia-resized.jpg?147056"
+			],
+			status: 1,
+		},
+		{
+			id: 2,
+			name: "Khanh Tran",
+			images: [
+				"https://www.washingtonpost.com/resizer/LUH1ZaouWY3_h0necP-XrTxa9K0=/200x200/s3.amazonaws.com/arc-authors/washpost/c68f3967-dcae-4e2b-9bea-db3ed9928896.png",
+				"https://i.kinja-img.com/gawker-media/image/upload/s--Tg_qqR3r--/c_scale,f_auto,fl_progressive,q_80,w_800/dnmtn4ksijwyep0xmljk.jpg",
+				"https://pbs.twimg.com/profile_images/1717956431/BP-headshot-fb-profile-photo_400x400.jpg",
+				"http://img.timeinc.net/time/photoessays/2008/people_who_mattered/obama_main_1216.jpg",
+				"https://www.utoronto.ca/sites/default/files/2018-11-13-dementia-resized.jpg?147056"
+			],
+			status: 0,
+		},
+		{
+			id: 3,
+			name: "Vong",
+			images: [
+				"https://www.washingtonpost.com/resizer/LUH1ZaouWY3_h0necP-XrTxa9K0=/200x200/s3.amazonaws.com/arc-authors/washpost/c68f3967-dcae-4e2b-9bea-db3ed9928896.png",
+				"https://i.kinja-img.com/gawker-media/image/upload/s--Tg_qqR3r--/c_scale,f_auto,fl_progressive,q_80,w_800/dnmtn4ksijwyep0xmljk.jpg",
+				"https://pbs.twimg.com/profile_images/1717956431/BP-headshot-fb-profile-photo_400x400.jpg",
+				"http://img.timeinc.net/time/photoessays/2008/people_who_mattered/obama_main_1216.jpg",
+				"https://www.utoronto.ca/sites/default/files/2018-11-13-dementia-resized.jpg?147056"
+			],
+			status: 1,
+		},
+		{
+			id: 4,
+			name: "Dat",
+			images: [
+				"https://www.washingtonpost.com/resizer/LUH1ZaouWY3_h0necP-XrTxa9K0=/200x200/s3.amazonaws.com/arc-authors/washpost/c68f3967-dcae-4e2b-9bea-db3ed9928896.png",
+				"https://i.kinja-img.com/gawker-media/image/upload/s--Tg_qqR3r--/c_scale,f_auto,fl_progressive,q_80,w_800/dnmtn4ksijwyep0xmljk.jpg",
+				"https://pbs.twimg.com/profile_images/1717956431/BP-headshot-fb-profile-photo_400x400.jpg",
+				"http://img.timeinc.net/time/photoessays/2008/people_who_mattered/obama_main_1216.jpg",
+				"https://www.utoronto.ca/sites/default/files/2018-11-13-dementia-resized.jpg?147056"
+			],
+			status: 1,
+		},
+	]
+	res.render("user",{users: user});
 });
 
 app.post('/logout', function (req, res) {
@@ -101,7 +150,7 @@ app.post('/logout', function (req, res) {
 	return res.redirect('/');
 })
 app.get('/', function (req, res) {
-	res.sendFile(__dirname + "/views/index.html");
+	res.render("index");
 })
 
 var server = app.listen(80, function () {

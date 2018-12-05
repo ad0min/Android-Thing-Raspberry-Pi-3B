@@ -18,3 +18,15 @@
     width: 65%;
     max-height: 15em;
 }
+
+.user-item-image{
+    width: 10em;
+    height: 10em;
+}
+
+@media (max-width: 678px) {
+    .user-item-image{
+        width: 5em;
+        height: 5em;
+    }
+}

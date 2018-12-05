@@ -3,22 +3,17 @@
 
 <head>
 	<title>Log</title>
-	<!-- Latest compiled and minified CSS -->
+	<link rel="icon" type="image/png" href="image/favicon.ico"/>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
-
-	<!-- jQuery library -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
-	<!-- Popper JS -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
-
-	<!-- Latest compiled JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
-
 	<link rel="stylesheet" href="/css/styles.css"/>
 </head>
 
-<body>
+<body >
 	<nav class="navbar navbar-expand-lg navbar-dark bg-custom">
 		<a class="navbar-brand" href="/home"><h2>Raspberry Pi</h2></a>
 		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -54,13 +49,24 @@
 		</thead>
 
 		<%for(let i = 0;i<logs.length;i++){%>
-			<%const log = logs[i]%>
-			<tr>
-					<td>04/12/2018</td>
-					<td>12:30:43</td>
-					<td><div class="text-success">Unlocked</div></td>
-					<td><a href="#">Khanh Tran</a></td>
-					<td><a href="#">View</a></td>
+			<%const log = logs[i];
+			let status = "Unlocked";
+			let color = "text-success";
+			if(log.status == 0){
+				status = "Locked";
+				color = "text-danger";
+			}
+			let rowColor = "";
+			if(i % 2 == 1){
+				rowColor = "table-info";
+			}
+			%>
+			<tr class="<%=rowColor%>">
+					<td><%=log.date%></td>
+					<td><%=log.time%></td>
+					<td><div class="<%=color%>"><%=status%></div></td>
+					<td><a href="#"><%=log.username%></a></td>
+					<td><a href="<%=log.image%>">View</a></td>
 			</tr>
 		<%}%>
 
