@@ -1,0 +1,20 @@
+.bg-custom{
+    background: #9152f8;
+}
+
+.card-container{
+    min-height: 500px;
+}
+
+.home-item{
+    width: 25rem;
+}
+
+.home-item:hover{
+    text-decoration: none;
+}
+
+.home-item-icon{
+    width: 65%;
+    max-height: 15em;
+}
