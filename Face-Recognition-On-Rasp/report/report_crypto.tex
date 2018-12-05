@@ -1,0 +1,173 @@
+\documentclass[a4paper]{article}
+\usepackage{cmap}  
+\usepackage{vntex}
+%\usepackage[english,vietnam]{babel}
+%\usepackage[utf8]{inputenc}
+%\usepackage[utf8]{inputenc}
+%\usepackage[francais]{babel}
+\usepackage{a4wide,amssymb,epsfig,latexsym,multicol,array,hhline,fancyhdr}
+
+\usepackage{amsmath}
+\usepackage{lastpage}
+%\usepackage[lined,boxed,commentsnumbered]{algorithm2e}
+\usepackage{enumerate}
+\usepackage{color}
+\usepackage{graphicx}							% Standard graphics package
+\usepackage{array}
+\usepackage{tabularx, caption}
+\usepackage{multirow}
+\usepackage{multicol}
+\usepackage{rotating}
+\usepackage{graphics}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{epsfig}
+\usepackage{tikz}
+\usetikzlibrary{arrows,snakes,backgrounds}
+\usepackage[unicode]{hyperref}
+\hypersetup{urlcolor=blue,linkcolor=black,citecolor=black,colorlinks=true} 
+%\usepackage{pstcol} 								% PSTricks with the standard color package
+
+
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
+
+%\usepackage{fancyhdr}
+\setlength{\headheight}{40pt}
+\pagestyle{fancy}
+\fancyhead{} % clear all header fields
+\fancyhead[L]{
+ \begin{tabular}{rl}
+    \begin{picture}(25,15)(0,0)
+    \put(0,-8){\includegraphics[width=8mm, height=8mm]{LogoBK.jpg}}
+    %\put(0,-8){\epsfig{width=10mm,figure=hcmut.eps}}
+   \end{picture}&
+	\begin{tabular}{l}
+		\textbf{\bf \ttfamily Faculty of Computer Science and Engineering}\\
+		\textbf{\bf \ttfamily Bach Khoa University}
+	\end{tabular} 	
+ \end{tabular}
+}
+\fancyhead[R]{
+	\begin{tabular}{l}
+		\tiny \bf \\
+		\tiny \bf 
+	\end{tabular}  }
+\fancyfoot{} % clear all footer fields
+\fancyfoot[L]{\scriptsize \ttfamily Report Internet of Things  Application Development - Year 2017-2018}
+\fancyfoot[R]{\scriptsize \ttfamily Page {\thepage}/\pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0.3pt}
+
+
+%%%
+%\setcounter{secnumdepth}{4}
+%\setcounter{tocdepth}{3}
+%\makeatletter
+%\newcounter {subsubsubsection}[subsubsection]
+%\renewcommand\thesubsubsubsection{\thesubsubsection .\@alph\c@subsubsubsection}
+%\newcommand\subsubsubsection{\@startsection{subsubsubsection}{4}{\z@}%
+%                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+%                                     {1.5ex \@plus .2ex}%
+%                                     {\normalfont\normalsize\bfseries}}
+%\newcommand*\l@subsubsubsection{\@dottedtocline{3}{10.0em}{4.1em}}
+%\newcommand*{\subsubsubsectionmark}[1]{}
+%\makeatother
+
+
+
+\begin{document}
+
+\begin{titlepage}
+\begin{center}
+Faculty of Computer Science and Engineering\\
+Ho Chi Minh City University of Technology
+\end{center}
+
+\vspace{.51cm}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=3cm]{LogoBK.jpg}
+\end{center}
+\end{figure}
+
+\vspace{0.5cm}
+
+
+\begin{center}
+\begin{tabular}{c}
+\multicolumn{1}{l}{\textbf{{\Large \textcolor{blue}{PHÁT TRIỂN ỨNG DỤNG INTERNET OF THINGS}}}}\\
+~~\\
+\hline
+\\
+\multicolumn{1}{l}{\textbf{{\Large \textcolor{blue}{Đề Tài}}}}\\
+\\
+\textbf{{\Huge \textcolor{blue}{Camera An Ninh Nhận Diện Bằng}}} \\
+\textbf{{\Huge \textcolor{blue}{Raspberry Pi 3}}}\\
+\\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{3cm}
+
+\begin{table}[h]
+\begin{tabular}{rrll}
+\hspace{5 cm} & GV Hướng Dẫn: & Nguyễn Trần Hữu Nguyên&\\
+& & Lê Trọng Nhân & \\
+& Sinh viên: & Nguyễn Thành Đạt & 1510700 \\
+& & Dương Vọng & 1514090 \\ 
+& & Trần Quốc Khánh & 1511524\\ 
+& & Trần Thanh Duy& 151****\\ 
+\end{tabular}
+\end{table}
+
+\begin{center}
+{\footnotesize Bach Khoa, 12/2018}
+\end{center}
+\end{titlepage}
+
+
+%\thispagestyle{empty}
+\newpage
+\tableofcontents
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Mô tả đề tài}
+\hspace{6mm} Sản phẩm nhóm hướng tới là camera an ninh nhận dạng đối tượng là con người theo thời gian thực. Đối tượng nhận dạng nếu được xác định trong hệ thống thì cửa sẽ tự động mở.
+
+\section{Chức năng}
+	Một số chức năng:
+	\begin{itemize}
+		\item Nhận diện đối tượng con người
+		\item Xác định nếu là người quen
+		\item Gửi thông báo tới điện thoại người sử dụng nếu phát hiện đối tượng lạ xuất hiện
+		\item Người dùng có thể điều khiển từ xa để mở cửa (đèn led sáng)
+		\item Hệ thống sẽ lưu lại nhật ký các sự kiện
+	\end{itemize}
+
+\section{Quá trình thử nghiệm}
+\subsection{Chuẩn bị dữ liệu}
+\hspace{6mm} Người dùng sẽ đăng nhập vào trang website của sản phẩm và upload một số ảnh của người thân để.
+
+\subsection{Kết quả}
+\hspace{6mm}
+
+\section{Hướng phát triển}
+Dự án có thể phát triển lên thành sản phẩm dùng trong các hộ gia đình lẫn công ty, cơ quan, nơi công cộng. 
+
+\section{Kết luận}
+Đây là sản phẩm hiệu quả, góp phần vào cuộc cách mạng 4.0 của Việt Nam.
+
+\section{Tham khảo}
+Link source code + report: \url{https://github.com/ad0min/Android-Thing-Raspberry-Pi-3B/tree/master/Face-Recognition-On-Rasp}
+%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+ 
+\end{document}
+
