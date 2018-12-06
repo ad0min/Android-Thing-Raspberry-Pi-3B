@@ -7,6 +7,8 @@ const database = require('./database');
 
 // Tao mot parser co dang application/x-www-form-urlencoded
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
+// app.use(urlencodedParser);
+app.use(express.json());
 
 app.use(express.static('public'));
 app.set('view engine', 'ejs')
@@ -33,59 +35,61 @@ app.get('/home', function (req, res) {
 })
 
 app.get('/log', function (req, res) {
-	const log = [
-		{
-			date: "04/12/2018",
-			time: "12:03:00",
-			username: "Khanh Tran",
-			userId: 12,
-			status: 0,
-			image: "link",
-		},
-		{
-			date: "04/12/2018",
-			time: "13:03:00",
-			username: "Duong Vong",
-			userId: 12,
-			status: 2,
-			image: "link",
-		},
-		{
-			date: "04/12/2018",
-			time: "20:03:00",
-			username: "Khanh Tran",
-			userId: 12,
-			status: 0,
-			image: "link",
-		},
-		{
-			date: "12/12/2018",
-			time: "21:03:00",
-			username: "Nguyen Thanh Dat",
-			userId: 12,
-			status: 1,
-			image: "link",
-		}, {
-			date: "04/12/2018",
-			time: "12:03:00",
-			username: "Khanh Tran",
-			userId: 12,
-			status: 0,
-			image: "link",
-		}
-	]
+	database.getLogs().then(result => {
+		result = result.map((item) => {
+			var date = new Date(item.timestamp);
+			// Hours part from the timestamp
+			var hours = date.getHours();
+			// Minutes part from the timestamp
+			var minutes = "0" + date.getMinutes();
+			// Seconds part from the timestamp
+			var seconds = "0" + date.getSeconds();
+			// Will display time in 10:30:23 format
+			item.time = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
 
-	res.render("log", { logs: log });
+			var day = '0' + date.getDay();
+			var month = '0' + date.getMonth();
+			var year = date.getFullYear();
+			item.date = day.slice(-2) + '/' + month.slice(-2) + '/' + year;
+
+			return item;
+		});
+		res.render("log", { logs: result });
+	}).catch(err => {
+
+	});
+});
+
+app.post('/add-log', bodyParser.raw(), (req, res) => {
+	database.addLogs(req.body).then(success => {
+		res.status(200).send();
+	}).catch(err => {
+		console.log(err);
+		res.status(404).send(err);
+	});
 });
 
 app.get('/user', function (req, res) {
-	database.getPersons().then(result=>{
+	database.getPersons().then(result => {
 		res.render("user", { users: result });
+	})
+		.catch(err => {
+			console.log(err);
+			res.status(400).send();
+		});
+});
+
+app.get('/delete-person', (req,res)=>{
+	const id = req.query.id;
+	console.log('delete person',id);
+	database.deletePerson(id).then(result=>{
+		console.log(result);
+		res.redirect('/user');
 	})
 	.catch(err=>{
 		console.log(err);
-		res.status(400).send();
-	});
+		res.redirect('/user');
+	})
 });
 
 app.post('/logout', function (req, res) {
@@ -111,7 +115,7 @@ app.post('/add-person', (req, res) => {
 		try {
 			fields.images = [];
 
-			if(Array.isArray(files.images)){
+			if (Array.isArray(files.images)) {
 				for (let i = 0; i < files.images.length; i++) {
 					const file = files.images[i];
 					//path tmp trên server
@@ -126,7 +130,7 @@ app.post('/add-person', (req, res) => {
 						if (err) throw err;
 					});
 				}
-			} else{
+			} else {
 				const file = files.images;
 				//path tmp trên server
 				var path = file.path;
@@ -141,7 +145,7 @@ app.post('/add-person', (req, res) => {
 				});
 			}
 
-			
+
 			fields.status = parseInt(fields.status);
 			// console.log(fields);
 			database.addPerson(fields);

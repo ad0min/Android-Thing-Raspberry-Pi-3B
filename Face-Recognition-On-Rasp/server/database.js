@@ -1,4 +1,5 @@
-const MongoClient = require('mongodb').MongoClient
+const mongo = require('mongodb');
+const MongoClient = mongo.MongoClient
 const HOST = 'mongodb://localhost:27017/';
 
 const DB_NAME = 'Raspberry_PI';
@@ -49,6 +50,25 @@ function getLogs() {
     });
 }
 
+
+function addLogs(logs) {
+    console.log(logs);
+    return new Promise((resolve, reject) => {
+        connect().then(client => {
+            const db = client.db(DB_NAME)
+            db.collection(LOG_TABLE).insertMany(logs)
+                .then(result => {
+                    client.close()
+                    resolve();
+                })
+                .catch(err => {
+                    client.close();
+                    reject(err);
+                });
+        });
+    });
+}
+
 function getPersons() {
     return new Promise((resolve, reject) => {
         connect().then(client => {
@@ -74,6 +94,23 @@ function getPersons() {
     });
 }
 
+function deletePerson(id) {
+    return new Promise((resolve, reject) => {
+        connect().then(client => {
+            const db = client.db(DB_NAME)
+            var o_id = new mongo.ObjectID(id);
+            db.collection(PERSON_TABLE).deleteOne({ _id: o_id }, (err, obj) => {
+                if (err) {
+                    reject(err);
+                    return;
+                }
+
+                resolve(obj);
+            });
+        });
+    });
+}
+
 function addPerson(person) {
     return new Promise((resolve, reject) => {
         connect().then(client => {
@@ -92,7 +129,9 @@ function addPerson(person) {
 }
 
 module.exports = {
-            getLogs,
-            getPersons,
-            addPerson
-        }
+    getLogs,
+    getPersons,
+    addPerson,
+    addLogs,
+    deletePerson
+}
