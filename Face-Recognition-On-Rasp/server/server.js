@@ -3,24 +3,8 @@ var app = express();
 var bodyParser = require('body-parser');
 var fs = require('fs');
 var formidable = require('formidable');
+const database = require('./database');
 
-
-var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://192.168.1.23:27017/";
-
-var checklogin = false;
-
-function dataArrayMongo(callback, db_name, collection_name) {
-	MongoClient.connect(url, function (err, db) {
-		if (err) throw err;
-		var dbo = db.db(db_name);
-		dbo.collection(collection_name).find({}).toArray(function (err, result) {
-			if (err) throw err;
-			db.close();
-			callback(result);
-		});
-	});
-}
 // Tao mot parser co dang application/x-www-form-urlencoded
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
@@ -95,57 +79,13 @@ app.get('/log', function (req, res) {
 });
 
 app.get('/user', function (req, res) {
-	const user = [
-		{
-			id: 0,
-			name: "Khanh Tran",
-			images: [
-				"https://www.washingtonpost.com/resizer/LUH1ZaouWY3_h0necP-XrTxa9K0=/200x200/s3.amazonaws.com/arc-authors/washpost/c68f3967-dcae-4e2b-9bea-db3ed9928896.png",
-				"https://i.kinja-img.com/gawker-media/image/upload/s--Tg_qqR3r--/c_scale,f_auto,fl_progressive,q_80,w_800/dnmtn4ksijwyep0xmljk.jpg",
-				"https://pbs.twimg.com/profile_images/1717956431/BP-headshot-fb-profile-photo_400x400.jpg",
-				"http://img.timeinc.net/time/photoessays/2008/people_who_mattered/obama_main_1216.jpg",
-				"https://www.utoronto.ca/sites/default/files/2018-11-13-dementia-resized.jpg?147056"
-			],
-			status: 1,
-		},
-		{
-			id: 2,
-			name: "Khanh Tran",
-			images: [
-				"https://www.washingtonpost.com/resizer/LUH1ZaouWY3_h0necP-XrTxa9K0=/200x200/s3.amazonaws.com/arc-authors/washpost/c68f3967-dcae-4e2b-9bea-db3ed9928896.png",
-				"https://i.kinja-img.com/gawker-media/image/upload/s--Tg_qqR3r--/c_scale,f_auto,fl_progressive,q_80,w_800/dnmtn4ksijwyep0xmljk.jpg",
-				"https://pbs.twimg.com/profile_images/1717956431/BP-headshot-fb-profile-photo_400x400.jpg",
-				"http://img.timeinc.net/time/photoessays/2008/people_who_mattered/obama_main_1216.jpg",
-				"https://www.utoronto.ca/sites/default/files/2018-11-13-dementia-resized.jpg?147056"
-			],
-			status: 0,
-		},
-		{
-			id: 3,
-			name: "Vong",
-			images: [
-				"https://www.washingtonpost.com/resizer/LUH1ZaouWY3_h0necP-XrTxa9K0=/200x200/s3.amazonaws.com/arc-authors/washpost/c68f3967-dcae-4e2b-9bea-db3ed9928896.png",
-				"https://i.kinja-img.com/gawker-media/image/upload/s--Tg_qqR3r--/c_scale,f_auto,fl_progressive,q_80,w_800/dnmtn4ksijwyep0xmljk.jpg",
-				"https://pbs.twimg.com/profile_images/1717956431/BP-headshot-fb-profile-photo_400x400.jpg",
-				"http://img.timeinc.net/time/photoessays/2008/people_who_mattered/obama_main_1216.jpg",
-				"https://www.utoronto.ca/sites/default/files/2018-11-13-dementia-resized.jpg?147056"
-			],
-			status: 1,
-		},
-		{
-			id: 4,
-			name: "Dat",
-			images: [
-				"https://www.washingtonpost.com/resizer/LUH1ZaouWY3_h0necP-XrTxa9K0=/200x200/s3.amazonaws.com/arc-authors/washpost/c68f3967-dcae-4e2b-9bea-db3ed9928896.png",
-				"https://i.kinja-img.com/gawker-media/image/upload/s--Tg_qqR3r--/c_scale,f_auto,fl_progressive,q_80,w_800/dnmtn4ksijwyep0xmljk.jpg",
-				"https://pbs.twimg.com/profile_images/1717956431/BP-headshot-fb-profile-photo_400x400.jpg",
-				"http://img.timeinc.net/time/photoessays/2008/people_who_mattered/obama_main_1216.jpg",
-				"https://www.utoronto.ca/sites/default/files/2018-11-13-dementia-resized.jpg?147056"
-			],
-			status: 1,
-		},
-	]
-	res.render("user", { users: user });
+	database.getPersons().then(result=>{
+		res.render("user", { users: result });
+	})
+	.catch(err=>{
+		console.log(err);
+		res.status(400).send();
+	});
 });
 
 app.post('/logout', function (req, res) {
@@ -204,7 +144,7 @@ app.post('/add-person', (req, res) => {
 			
 			fields.status = parseInt(fields.status);
 			// console.log(fields);
-			//Todo save to database
+			database.addPerson(fields);
 			res.redirect('/user');
 		} catch (err) {
 			res.status(403).send();
