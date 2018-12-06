@@ -4,29 +4,41 @@ var bodyParser = require('body-parser');
 var fs = require('fs');
 var formidable = require('formidable');
 const database = require('./database');
+var session = require('express-session')
 
 // Tao mot parser co dang application/x-www-form-urlencoded
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 // app.use(urlencodedParser);
+app.use(session({
+	secret: 'work hard raspberry',
+	resave: true,
+	saveUninitialized: false
+  }));
 app.use(express.json());
 
 app.use(express.static('public'));
 app.set('view engine', 'ejs')
 
-app.post('/check_login', urlencodedParser, function (req, res) {
-	db_name = "rapbery";
-	collection_name = "users";
-	dataArrayMongo(function (result) {
-		let leng = result.length;
-		let i;
-		for (i = 0; i < leng; i++) {
-			if (req.body.username == result[i].username && req.body.password == result[i].password) {
-				checklogin = true;
-				return res.redirect('/home');
-			}
-		}
-		return res.redirect('/')
-	}, db_name, collection_name);
+app.use((req,res,next)=>{
+	if(req.originalUrl == '/login'){
+		next();
+	} else if(req.session.userId){
+		next();
+	} else{
+		res.redirect('/login');
+	}
+})
+
+app.post('/login', urlencodedParser, function (req, res) {
+	console.log(req.body);
+	if ((req.body.username == 'admin' && req.body.password == 'admin') ||
+	(req.body.username == 'ad' && req.body.password == 'ad')) {
+		const session = req.session;
+		session.userId = req.body.username;
+		return res.redirect('/home');
+	} else{
+		return res.redirect('/');
+	}
 })
 
 
@@ -93,16 +105,25 @@ app.get('/delete-person', (req,res)=>{
 });
 
 app.post('/logout', function (req, res) {
-	checklogin = false;
-	return res.redirect('/');
+	req.session.userId = undefined;
+	return res.redirect('/login');
 })
 
 app.get('/add-person', (req, res) => {
 	res.render('add-user');
 });
 app.get('/', function (req, res) {
-	res.render("index");
+	res.redirect('/home');
 })
+
+app.get('/login',(req,res)=>{
+	console.log(req.session);
+	if(req.session.userId){
+		res.redirect('/home');
+	} else{
+		res.render('index');
+	}
+});
 
 app.post('/add-person', (req, res) => {
 	var form = new formidable.IncomingForm();
