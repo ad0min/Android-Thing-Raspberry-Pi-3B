@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Raspberry Pi</title>
+	<link rel="icon" type="image/png" href="image/favicon.ico"/>
+	
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+	<link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-custom">
+		<a class="navbar-brand" href="/home">
+			<h2>Raspberry Pi</h2>
+		</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+		 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="/home">Home </a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/log">Log</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link " href="/user">User</a>
+				</li>
+			</ul>
+			<form class="form-inline my-2 my-lg-0" action="/logout" method="post">
+				<button class="btn btn-dark my-2 my-sm-0" type="submit">Logout</button>
+			</form>
+		</div>
+	</nav>
+
+	<div class="container">
+		<div class="row justify-content-center align-item-center card-container">
+			<a href="/log" class="card mx-5 my-3 home-item bg-info text-white">
+				<div class="row justify-content-center">
+					<img class="card-img-top home-item-icon mx-3 my-3" src="/image/log-icon.png" alt="View Log">
+				</div>
+				<div class="card-body">
+					<h2>Log</h2>
+					<p class="card-text">See history of your door.</p>
+				</div>
+			</a>
+
+			<a href="/user" class="card mx-5 my-3 home-item bg-info text-white">
+				<div class="row justify-content-center">
+					<img class="card-img-top home-item-icon mx-3 my-3" src="/image/user-icon.png" alt="View Log">
+				</div>
+				<div class="card-body">
+					<h2>User</h2>
+					<p class="card-text">Manage the users who can open your door.</p>
+				</div>
+			</a>
+
+		</div>
+
+	</div>
+
+</body>
+
+</html>

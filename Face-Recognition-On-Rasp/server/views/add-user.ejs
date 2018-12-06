@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>User</title>
+    <link rel="icon" type="image/png" href="image/favicon.ico" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-custom">
+        <a class="navbar-brand" href="/home">
+            <h2>Raspberry Pi</h2>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/home">Home </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/log">Log</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="/user">User</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0" action="/logout" method="post">
+                <button class="btn btn-dark my-2 my-sm-0" type="submit">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container">
+        <form class="form-horizontal" enctype="multipart/form-data" role="form" method="POST" action="/add-person">
+            <div class="row justify-content-center">
+                <h2 class="text-center">Add new person</h2>
+            </div>
+            <hr>
+            <div class="row mb-2">
+                <div class="col-md-3 field-label-responsive my-auto">
+                    <div class="input-group-addon float-md-right"><i class="fa fa-user"></i> Name </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-0">
+                        <input type="text" name="name" class="form-control" id="name" placeholder="Name" required
+                            autofocus>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 field-label-responsive my-auto">
+                    <div class="input-group-addon float-md-right"><i class="fas fa-lock"></i> Status </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-0">
+                        <select name="status" class="form-control">
+                            <option value="0">Block</option>
+                            <option value="1" selected>Authen</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 field-label-responsive my-auto">
+                    <div class="input-group-addon float-md-right"><i class="fas fa-image"></i> Images </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-0">
+                        <input name="images" type="file" id="images" accept="image/gif, image/jpeg, image/png" multiple onchange="selectedFiles(this.files);" />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                </div>
+            </div>
+
+            <div class="row mb-2 px-0 mx-0 justify-content-center">
+                <div id="image-list"  class="col-12 row mx-0 justify-content-center">
+                </div>
+                <div class="text-center text-secondary">- Click image to remove it</div>
+            </div>
+
+            <div class="row justify-content-center mb-5">
+                <button type="submit" class="btn btn-success mx-2"><i class="fa fa-user-plus"></i> Add</button>
+                <button type="button" class="btn btn-secondary mx-2"><i class="fas fa-eraser"></i> Cancel</button>
+           
+            </div>
+        </form>
+    </div>
+
+</body>
+
+<script>
+    var currentFiles = [];
+    var isRender = false;
+    function selectedFiles(files){
+        for(let i = 0;i< files.length;i++){
+            currentFiles.push(files[i]);
+        }
+        previewImage(currentFiles);
+    }
+
+    function previewImage(files) {
+        $("#image-list").empty();
+        console.log("Selected images", files);
+        if (!files || files.length <= 0) {
+            return;
+        }
+        isRender = true;
+        let i = 0;
+        const callback = ()=>{
+            i++;
+            if(i < files.length){
+                showImage(files[i],callback);
+            } else{
+                isRender = false;
+            }
+        }
+        showImage(files[i],callback);
+    }
+
+    function showImage(file,callback){
+        const img = document.createElement("img");
+            img.classList.add('img-fluid');
+            img.classList.add('img-thumbnail');
+            const a = document.createElement("a");
+            a.classList.add("d-block","h-100","person-image-thumbnail","px-1","py-1","mx-1");
+            a.appendChild(img);
+            var div = document.createElement("div");
+            div.classList.add("col-lg-3","col-md-4","col-xs-6","my-1");
+            div.appendChild(a);
+            div.onclick = ()=>{
+                removeImage(file.name);
+            }
+         
+            var reader = new FileReader();
+            reader.onloadend = function () {
+                img.src = reader.result;
+                if(callback){
+                    callback();
+                }
+            }
+            reader.readAsDataURL(file);
+            $("#image-list").append(div);
+    }
+
+    function removeImage(name){
+        console.log('Remove image',name,isRender);
+        if(isRender){
+            return;
+        }
+
+        for(let i = 0;i< currentFiles.length;i++){
+            if(currentFiles[i].name == name){
+                console.log(typeof(currentFiles));
+                currentFiles.splice(i,1);
+                break;
+            }
+        }
+
+        previewImage(currentFiles);
+    }
+</script>
+
+</html>
