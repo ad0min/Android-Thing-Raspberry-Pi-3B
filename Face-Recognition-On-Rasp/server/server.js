@@ -1,6 +1,9 @@
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
+var fs = require('fs');
+var formidable = require('formidable');
+
 
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://192.168.1.23:27017/";
@@ -45,7 +48,7 @@ app.get('/home', function (req, res) {
 	res.render("home");
 })
 
-app.get('/log',function(req,res){
+app.get('/log', function (req, res) {
 	const log = [
 		{
 			date: "04/12/2018",
@@ -78,7 +81,7 @@ app.get('/log',function(req,res){
 			userId: 12,
 			status: 1,
 			image: "link",
-		},{
+		}, {
 			date: "04/12/2018",
 			time: "12:03:00",
 			username: "Khanh Tran",
@@ -88,10 +91,10 @@ app.get('/log',function(req,res){
 		}
 	]
 
-	res.render("log",{logs:log});
+	res.render("log", { logs: log });
 });
 
-app.get('/user',function(req,res){
+app.get('/user', function (req, res) {
 	const user = [
 		{
 			id: 0,
@@ -142,7 +145,7 @@ app.get('/user',function(req,res){
 			status: 1,
 		},
 	]
-	res.render("user",{users: user});
+	res.render("user", { users: user });
 });
 
 app.post('/logout', function (req, res) {
@@ -150,12 +153,64 @@ app.post('/logout', function (req, res) {
 	return res.redirect('/');
 })
 
-app.get('/add-person',(req,res)=>{
+app.get('/add-person', (req, res) => {
 	res.render('add-user');
 });
 app.get('/', function (req, res) {
 	res.render("index");
 })
+
+app.post('/add-person', (req, res) => {
+	var form = new formidable.IncomingForm();
+	form.multiples = true;
+	//Thiết lập thư mục chứa file trên server
+	form.uploadDir = "public/upload/";
+	//xử lý upload
+	form.parse(req, function (err, fields, files) {
+		console.log(files);
+		try {
+			fields.images = [];
+
+			if(Array.isArray(files.images)){
+				for (let i = 0; i < files.images.length; i++) {
+					const file = files.images[i];
+					//path tmp trên server
+					var path = file.path;
+					let userName = fields.name.replace(/ /g, '_')
+					let fileName = userName + '-' +
+						new Date().getTime() + '-' + file.name;
+					//thiết lập path mới cho file
+					var newpath = form.uploadDir + fileName;
+					fields.images.push('/upload/' + fileName);
+					fs.rename(path, newpath, function (err) {
+						if (err) throw err;
+					});
+				}
+			} else{
+				const file = files.images;
+				//path tmp trên server
+				var path = file.path;
+				let userName = fields.name.replace(/ /g, '_')
+				let fileName = userName + '-' +
+					new Date().getTime() + '-' + file.name;
+				//thiết lập path mới cho file
+				var newpath = form.uploadDir + fileName;
+				fields.images.push('/upload/' + fileName);
+				fs.rename(path, newpath, function (err) {
+					if (err) throw err;
+				});
+			}
+
+			
+			fields.status = parseInt(fields.status);
+			// console.log(fields);
+			//Todo save to database
+			res.redirect('/user');
+		} catch (err) {
+			res.status(403).send();
+		}
+	});
+});
 
 var server = app.listen(80, function () {
 

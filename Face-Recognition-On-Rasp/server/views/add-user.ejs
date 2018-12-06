@@ -45,7 +45,7 @@
     </nav>
 
     <div class="container">
-        <form class="form-horizontal" role="form" method="POST" action="/register">
+        <form class="form-horizontal" enctype="multipart/form-data" role="form" method="POST" action="/add-person">
             <div class="row justify-content-center">
                 <h2 class="text-center">Add new person</h2>
             </div>
@@ -69,9 +69,9 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group mb-0">
-                        <select class="form-control">
+                        <select name="status" class="form-control">
                             <option value="0">Block</option>
-                            <option value="1">Authen</option>
+                            <option value="1" selected>Authen</option>
                         </select>
                     </div>
                 </div>
@@ -84,7 +84,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group mb-0">
-                        <input type="file" id="images" accept="image/gif, image/jpeg, image/png" multiple onchange="selectedFiles(this.files);" />
+                        <input name="images" type="file" id="images" accept="image/gif, image/jpeg, image/png" multiple onchange="selectedFiles(this.files);" />
                     </div>
                 </div>
                 <div class="col-md-3">
