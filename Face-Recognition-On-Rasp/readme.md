@@ -1,4 +1,4 @@
-# Raspberry PI Server
+# Raspberry PI - Face Recognition App
 
 ## To start database, do the following steps:
 - Make sure that your computer have installed MongoDb.
