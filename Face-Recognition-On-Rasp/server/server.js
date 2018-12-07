@@ -45,9 +45,7 @@ app.post('/login', urlencodedParser, function (req, res) {
 
 
 app.get('/home', function (req, res) {
-	if(checklogin)
-		res.render("home");
-	else res.redirect('/');
+	res.render("home");
 })
 
 app.get('/log', function (req, res) {
@@ -85,15 +83,20 @@ app.post('/add-log', bodyParser.raw(), (req, res) => {
 	});
 });
 
-app.get('/user', function (req, res) {
+app.get('/card', function (req, res) {
 	database.getPersons().then(result => {
-		res.render("user", { users: result });
+		res.render("card", { users: result });
 	})
 		.catch(err => {
 			console.log(err);
 			res.status(400).send();
 		});
 });
+
+app.get('/rapsberry',function (req,res){
+	res.render('rapsberry'); //need to edit later
+})
+
 
 app.get('/delete-person', (req,res)=>{
 	const id = req.query.id;
@@ -116,6 +119,10 @@ app.post('/logout', function (req, res) {
 app.get('/add-person', (req, res) => {
 	res.render('add-user');
 });
+
+app.get('/add-raps',(req,res) => {
+	res.render('add-raps')
+})
 app.get('/', function (req, res) {
 	res.redirect('/home');
 })
@@ -129,7 +136,7 @@ app.get('/login',(req,res)=>{
 	}
 });
 
-app.post('/add-person', (req, res) => {
+app.post('/add-card', (req, res) => {
 	var form = new formidable.IncomingForm();
 	form.multiples = true;
 	//Thiết lập thư mục chứa file trên server
@@ -174,7 +181,7 @@ app.post('/add-person', (req, res) => {
 			fields.status = parseInt(fields.status);
 			// console.log(fields);
 			database.addPerson(fields);
-			res.redirect('/user');
+			res.redirect('/card');
 		} catch (err) {
 			res.status(403).send();
 		}
