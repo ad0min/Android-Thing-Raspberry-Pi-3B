@@ -1,10 +1,15 @@
+require('dotenv').config();
 var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var fs = require('fs');
 var formidable = require('formidable');
+
+require('./mongooseConnection');
 const database = require('./database');
 var session = require('express-session')
+const socketManager = require('./index');
+
 
 // Tao mot parser co dang application/x-www-form-urlencoded
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
@@ -74,18 +79,18 @@ app.get('/log', function (req, res) {
 	});
 });
 
-app.post('/add-log', bodyParser.raw(), (req, res) => {
-	database.addLogs(req.body).then(success => {
-		res.status(200).send();
-	}).catch(err => {
-		console.log(err);
-		res.status(404).send(err);
-	});
-});
+// app.post('/add-log', bodyParser.raw(), (req, res) => {
+// 	// database.addLogs(req.body).then(success => {
+// 	// 	res.status(200).send();
+// 	// }).catch(err => {
+// 	// 	console.log(err);
+// 	// 	res.status(404).send(err);
+// 	// });
+// });
 
 app.get('/user', function (req, res) {
 	database.getPersons().then(result => {
-		console.log("render result user 1: ", result);
+		console.log("render result user 1: ", result, "length ",result.length);
 		res.render("user", { users: result });
 	})
 		.catch(err => {
@@ -107,7 +112,7 @@ app.post('/add-user', (req, res) => {
 	form.parse(req, function (err, fields, files) {
 		// console.log(files);
 		try {
-			fields.images = [];
+			fields.avatar = '';
 
 			if (Array.isArray(files.images)) {
 				for (let i = 0; i < files.images.length; i++) {
@@ -134,16 +139,13 @@ app.post('/add-user', (req, res) => {
 					new Date().getTime() + '-' + file.name;
 				//thiết lập path mới cho file
 				var newpath = form.uploadDir + fileName;
-				fields.images.push('/upload/' + fileName);
+				fields.avatar = '/upload/' + fileName;
 				fs.rename(path, newpath, function (err) {
 					if (err) throw err;
 				});
 				console.log("else: vong dep trai");
 			}
 
-
-			fields.status = parseInt(fields.status);
-			// console.log(fields);
 			database.addPerson(fields);
 			console.log("data insert user: ", fields);
 			res.redirect('/user');
@@ -213,15 +215,17 @@ app.get('/door', function (req, res) {
 	const params = req.query;
 	let status;
 	let message;
-	if(params.action && params.status){
+	if (params.action && params.status) {
 		message = params.action + ' ' + params.status;
 		status = params.status;
 	}
 
 	database.getDoor().then(result => {
 		// console.log(result);
-		res.render('door', { doors: result ,message: message,status: status,
-		doorId: params.id}); //need to edit later	
+		res.render('door', {
+			doors: result, message: message, status: status,
+			doorId: params.id
+		}); //need to edit later	
 	})
 })
 
@@ -258,17 +262,12 @@ app.get('/delete-door', (req, res) => {
 		})
 });
 
-<<<<<<< HEAD
 app.get('/permission', function (req, res) {
-	res.render('permission'); //need to edit later
-=======
-app.get('/permission',function (req,res){
 	database.getPermission().then(result => {
 		console.log(result);
-		res.render('permission',{permissions: result});
+		res.render('permission', { permissions: result });
 	})
 	// res.render('permission'); //need to edit later
->>>>>>> b7929dae600b2fe6797105eec467c5cfbf745c20
 })
 
 app.get('/add-permission', function (req, res) {
@@ -283,13 +282,8 @@ app.post('/add-permission', (req, res) => {
 	form.parse(req, function (err, fields) {
 
 		try {
-<<<<<<< HEAD
-			database.addDoor(fields);
-			console.log("data insert permission: ", fields);
-=======
 			database.addPermission(fields);
-			console.log("data insert permission: ",fields);
->>>>>>> b7929dae600b2fe6797105eec467c5cfbf745c20
+			console.log("data insert permission: ", fields);
 			res.redirect('/permission');
 		} catch (err) {
 			console.log(err);
@@ -297,31 +291,17 @@ app.post('/add-permission', (req, res) => {
 		}
 	});
 });
-<<<<<<< HEAD
-app.get('/delete-door', (req, res) => {
+app.get('/delete-permission', (req, res) => {
 	const id = req.query.id;
-	console.log('delete door', id);
-	database.deleteDoor(id).then(result => {
-=======
-app.get('/delete-permission', (req,res)=>{
-	const id = req.query.id;
-	console.log('delete permission',id);
-	database.deletePermission(id).then(result=>{
->>>>>>> b7929dae600b2fe6797105eec467c5cfbf745c20
+	console.log('delete permission', id);
+	database.deletePermission(id).then(result => {
 		console.log(result);
 		res.redirect('/permission');
 	})
-<<<<<<< HEAD
 		.catch(err => {
 			console.log(err);
-			res.redirect('/door');
+			res.redirect('/permission');
 		})
-=======
-	.catch(err=>{
-		console.log(err);
-		res.redirect('/permission');
-	})
->>>>>>> b7929dae600b2fe6797105eec467c5cfbf745c20
 });
 
 app.post('/logout', function (req, res) {
@@ -348,20 +328,29 @@ app.get('/login', (req, res) => {
 app.get('/door/open', (req, res) => {
 	const params = req.query;
 	const id = params["id"];
+	socketManager.emitOpenDoor(id);
 	res.redirect('/door?action=Open door&status=success&id=' + id);
 });
 
 app.get('/door/close', (req, res) => {
 	const params = req.query;
 	const id = params["id"];
-	console.log(id);
+	socketManager.emitCloseDoor(id);
 	res.redirect('/door?action=Close door&status=success&id=' + id);
 });
 
 app.get('/door/lock', (req, res) => {
 	const params = req.query;
 	const id = params["id"];
+	socketManager.emitLockDoor(id);
 	res.redirect('/door?action=Lock door&status=success&id=' + id);
+});
+
+app.get('/door/unlock', (req, res) => {
+	const params = req.query;
+	const id = params["id"];
+	socketManager.emitUnlockDoor(id);
+	res.redirect('/door?action=Unlock door&status=success&id=' + id);
 });
 
 app.get('/door/take-picture', (req, res) => {
@@ -369,6 +358,8 @@ app.get('/door/take-picture', (req, res) => {
 	const id = params["id"];
 	res.redirect('/door?action=Take picture&status=success&id=' + id);
 });
+
+
 
 
 

@@ -14,7 +14,7 @@ const logModel = mongoose.model(modelType.logType);
 const departmentModel = mongoose.model(modelType.departmentType);
 const permissionModel = mongoose.model(modelType.permissionType);
 
-const { CODE_AUTHEN, CODE_REQUEST_CLOSE_DOOR, CODE_ERROR, CODE_REQUEST_LOCK_DOOR, CODE_REQUEST_OPEN_DOOR, CODE_RASP_INFO, CODE_CHECK_PERMISION_CARD, CODE_REQUEST_RASP_INFO, CODE_REQUEST_TAKE_PICTURE, CODE_REQUEST_WRITE_CARD, CODE_SUCCESS, MESSAGE_SUCCESS} = require('./const');
+const {CODE_REQUEST_UNLOCK_DOOR, CODE_AUTHEN, CODE_REQUEST_CLOSE_DOOR, CODE_ERROR, CODE_REQUEST_LOCK_DOOR, CODE_REQUEST_OPEN_DOOR, CODE_RASP_INFO, CODE_CHECK_PERMISION_CARD, CODE_REQUEST_RASP_INFO, CODE_REQUEST_TAKE_PICTURE, CODE_REQUEST_WRITE_CARD, CODE_SUCCESS, MESSAGE_SUCCESS} = require('./const');
 
 const socketList = {};
 
@@ -36,7 +36,7 @@ io.on('connection', socket => {
             if(code === CODE_AUTHEN){
                 const res = process.env.SERVER_KEY_AUTHEN === data;
                 socketList[socket.id].authen = res;
-                callback(res? CODE_SUCCESS : CODE_ERROR + `;${MESSAGE_SUCCESS}`);
+                callback(res? CODE_SUCCESS + `;${MESSAGE_SUCCESS}` : CODE_ERROR);
                 if (!res) {
                     socket.disconnect(true);
                 }
@@ -54,7 +54,7 @@ io.on('connection', socket => {
                         const tmp = await doorModel.findById(data).exec();
                         // console.log(tmp);
                         if (tmp){
-                            _.set(socketList, socket.id.doorId, data);
+                            _.set(socketList, `${socket.id}.doorId`, data);
                             callback(CODE_SUCCESS +`;${MESSAGE_SUCCESS}`);
                         }
                         else {
@@ -95,19 +95,41 @@ io.on('connection', socket => {
 });
 
 function emitOpenDoor(doorId) {
-    const socket = _.get(socketList, 'id.doorId', doorId);
-    const code = CODE_REQUEST_OPEN_DOOR;
-    socket.emit('event', code + `;Open door ${doorId}`);
+    for(let key in socketList){
+        if(socketList[key].doorId == doorId){
+            console.log('Emited open door ' + doorId);
+            const code = CODE_REQUEST_OPEN_DOOR;
+            socketList[key].socket.emit('event', code + `;Open door ${doorId}`);
+        }
+    }
 }
 function emitCloseDoor(doorId) {
-    const socket = _.get(socketList, 'id.doorId', doorId);
-    const code = CODE_REQUEST_CLOSE_DOOR;
-    socket.emit('event', code + `;Close door ${doorId}`);
+    for(let key in socketList){
+        if(socketList[key].doorId == doorId){
+            console.log('Emited close door ' + doorId);
+            const code = CODE_REQUEST_CLOSE_DOOR;
+            socketList[key].socket.emit('event', code + `;Close door ${doorId}`);
+        }
+    }
 }
 function emitLockDoor(doorId) {
-    const socket = _.get(socketList, 'id.doorId', doorId);
-    const code = CODE_REQUEST_LOOK_DOOR;
-    socket.emit('event', code + `;Look door ${doorId}`);
+    for(let key in socketList){
+        if(socketList[key].doorId == doorId){
+            const code = CODE_REQUEST_LOCK_DOOR;
+            console.log('Emited lock door ' + doorId);
+            socketList[key].socket.emit('event', code + `;Look door ${doorId}`);
+        }
+    }
+}
+
+function emitUnlockDoor(doorId) {
+    for(let key in socketList){
+        if(socketList[key].doorId == doorId){
+            console.log('Emited unlock door ' + doorId);
+            const code = CODE_REQUEST_UNLOCK_DOOR;
+            socketList[key].socket.emit('event', code + `;Unlock door ${doorId}`);
+        }
+    }
 }
 
 // doorModel.create({name: 'floor 1'});
@@ -127,5 +149,6 @@ http.listen(process.env.PORT, function(){
 module.exports = {
     emitOpenDoor,
     emitCloseDoor,
-    emitLockDoor
+    emitLockDoor,
+    emitUnlockDoor
 }

@@ -53,6 +53,7 @@ public class MainActivity extends Activity {
     private boolean mIsReading = false;
     private boolean mIsWriting = false;
     private Command mCurrentCommand;
+    private boolean mIsLockedDoor = false;
 
 
     @Override
@@ -114,30 +115,33 @@ public class MainActivity extends Activity {
                     case Command.LOCK_DOOR:
                         lockedDoor();
                         break;
+                    case Command.UNLOCK_DOOR:
+                        unlockDoor();
+                        break;
                     case Command.REQUEST_TAKE_PICTURE:
                         takePicture();
                         break;
                     case Command.SUCCESS:
-                        Log.d("iot","Success " + command.toString());
-                        if(mCurrentCommand != null && mCurrentCommand.getCode() == Command.CHECK_USER_PERMISSION){
+                        Log.d("iot", "Success " + command.toString());
+                        if (mCurrentCommand != null && mCurrentCommand.getCode() == Command.CHECK_USER_PERMISSION) {
                             openDoor();
                             mHandler.postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     closeDoor();
                                 }
-                            },5000);
+                            }, 5000);
                         }
                         break;
                     case Command.ERROR:
-                        Log.d("iot","Error " + command.toString());
-                            flashStatusLed(new boolean[]{true,false,false});
-                            mHandler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    changeLedToSystemReady();
-                                }
-                        },3000);
+                        Log.d("iot", "Error " + command.toString());
+                        flashStatusLed(new boolean[]{true, false, false});
+                        mHandler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                changeLedToSystemReady();
+                            }
+                        }, 3000);
                         break;
                     case Command.REQUEST_WRITE_DATA:
                         writeToCard(command.getData1());
@@ -235,6 +239,7 @@ public class MainActivity extends Activity {
     }
 
     private void openDoor() {
+        unlockDoor();
         try {
             mOpenDoor.setValue(true);
             mCloseDoor.setValue(false);
@@ -245,6 +250,7 @@ public class MainActivity extends Activity {
     }
 
     private void closeDoor() {
+        unlockDoor();
         try {
             mOpenDoor.setValue(false);
             mCloseDoor.setValue(true);
@@ -259,6 +265,24 @@ public class MainActivity extends Activity {
             mOpenDoor.setValue(false);
             mCloseDoor.setValue(false);
             mLockedDoor.setValue(true);
+
+            mIsReading = false;
+            mIsWriting = false;
+            mIsLockedDoor = true;
+        } catch (Exception ex) {
+
+        }
+
+    }
+
+    private void unlockDoor() {
+        Log.d("iot","Unlock door");
+        try {
+            mOpenDoor.setValue(false);
+            mCloseDoor.setValue(true);
+            mLockedDoor.setValue(false);
+            mIsLockedDoor = false;
+            readFromCard();
         } catch (Exception ex) {
 
         }
@@ -296,32 +320,36 @@ public class MainActivity extends Activity {
             public void onSuccess(String data) {
                 Log.d("iot", "read data from card success");
                 Log.d("iot", "Data: " + data);
+                if(mIsLockedDoor){
+                    Log.d("iot", "Door is locked: ");
+                    return;
+                }
 
                 Command command = new Command();
                 command.setCode(Command.CHECK_USER_PERMISSION);
                 command.setData1("5c12ab51b89560592374eb5d");
                 mCurrentCommand = command;
                 mServerManager.sendCommand(command);
-                if(mIsReading){
+                if (mIsReading) {
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             readFromCard();
                         }
-                    },800);
+                    }, 800);
                 }
             }
 
             @Override
             public void onError() {
 //                Log.d("iot", "read data from card error");
-                if(mIsReading) {
+                if (mIsReading) {
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             readFromCard();
                         }
-                    },800);
+                    }, 800);
                 }
             }
         });

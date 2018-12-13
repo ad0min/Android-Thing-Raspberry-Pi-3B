@@ -6,6 +6,7 @@ public class Command {
     public static final int OPEN_DOOR = 110;
     public static final int CLOSE_DOOR = 111;
     public static final int LOCK_DOOR = 112;
+    public static final int UNLOCK_DOOR = 113;
     public static final int REQUEST_TAKE_PICTURE = 120;
     public static final int REQUEST_DOOR_INFO = 100;
     public static final int REQUEST_WRITE_DATA = 130;

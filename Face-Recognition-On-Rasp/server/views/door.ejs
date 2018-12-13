@@ -69,14 +69,15 @@
 
 	<table class="table">
 		<thead>
+			<th>Id</th>
 			<th>Name</th>
 			<th>Department</th>
 			<th>Permission</th>
 			<th>Action</th>
-			<th>Status</th>
 		</thead>
 		<% for(let i=0; i <doors.length; i++){ %>
 		<tr>
+			<td><%=doors[i]._id%></td>
 			<td>
 				<%= doors[i].name %>
 			</td>
@@ -99,6 +100,10 @@
 					<i class="fas fa-lock"></i>
 				</a>
 
+				<a href="/door/unlock?id=<%=doors[i].id%>" class="btn btn-info btn-sm my-1">
+					<i class="fas fa-unlock"></i>
+				</a>
+
 				<a href="/door/take-picture?id=<%=doors[i].id%>" class="btn btn-info btn-sm my-1">
 					<i class="fas fa-camera"></i>
 				</a>
@@ -108,12 +113,12 @@
 				<a href="/delete-door?id=<%=doors[i].id%>" class="btn btn-danger btn-sm my-1">
 					<i class="fas fa-trash-alt"></i>
 				</a>
-			</td>
-			<td>
+				<br/>
 				<%if(doorId == doors[i].id){%>
 					<%=message%>
 				<%}%>
 			</td>
+				
 		</tr>
 		<% } %>
 	</table>

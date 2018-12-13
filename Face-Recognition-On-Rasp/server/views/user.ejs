@@ -65,7 +65,8 @@
 		</button>
 	
 	</div>
-	
+
+
 	<table class="table">
 		<thead>
 			<th>Name</th>
@@ -74,9 +75,8 @@
 			<th>Permission</th>
 			<th>Action</th>
 		</thead>
-		<%
-		<!-- console.log(users); -->
-		for(let i = 0;i<users.length;i++){%>
+		<%let len = users.length;
+		for(let i = 0;i< len; i++){%>
 		<%  const user = users[i];
 			let status = "Authen";
 			let color = "text-success";
@@ -92,8 +92,8 @@
 			}
 			let rowColor = "";
 			let image = "";
-			if(user.images.length >0){
-				image = user.images[0];
+			if(user.avatar){
+				image = user.avatar;
 			}
 			if(i % 2 == 1){
 				rowColor = "table-info";
@@ -119,7 +119,7 @@
 					<a href="#" class="btn btn-info btn-sm my-1">
 							<i class="fas fa-edit"></i> Edit 
 					</a>
-					<a href="/delete-person?id=<%=user.id%>" class="btn btn-danger btn-sm my-1">
+					<a href="/delete-person?id=<%=user._id%>" class="btn btn-danger btn-sm my-1">
 							<i class="fas fa-trash-alt"></i> Delete 
 					</a>
 			</td>
@@ -129,9 +129,5 @@
 
 		</div>
 </body>
-
-<script type="text/javascript">
-	console.log(users);
-</script>
 
 </html>

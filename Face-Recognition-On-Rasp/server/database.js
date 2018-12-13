@@ -1,311 +1,59 @@
-const mongo = require('mongodb');
-const MongoClient = mongo.MongoClient
-const HOST = 'mongodb://localhost:27017/';
+const mongoose = require('mongoose');
+const modelType = require('./models/type');
+const doorModel = mongoose.model(modelType.doorType);
+const userModel = mongoose.model(modelType.userType);
+const logModel = mongoose.model(modelType.logType);
+const departmentModel = mongoose.model(modelType.departmentType);
+const permissionModel = mongoose.model(modelType.permissionType);
 
-const DB_NAME = 'Raspberry_PI';
-const PERSON_TABLE = 'Person';
-const LOG_TABLE = 'Log';
-const DEPARTMENT_TABLE = 'Department';
-const DOOR_TABLE = 'Door';
-const PERMISSION_TABLE = 'Permission';
-
-/**
- * Connect to database.
- */
-function connect() {
-    return new Promise((resolve, reject) => {
-        MongoClient.connect(HOST, (err, client) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-
-            resolve(client);
-        });
-    });
-}
-
-/**
- * Get all provinces that was supported
- */
 function getLogs() {
-    return new Promise((resolve, reject) => {
-        connect().then(client => {
-            const db = client.db(DB_NAME)
-            db.collection(LOG_TABLE).find().toArray((err, result) => {
-                client.close();
-
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                result = result.map(item => {
-                    item.id = item._id;
-                    item._id = undefined;
-                    return item;
-                })
-                resolve(result);
-            });
-        })
-            .catch(err => {
-                reject(err);
-            });
-    });
-
-}
-
-
-function addLogs(logs) {
-    console.log(logs);
-    return new Promise((resolve, reject) => {
-        connect().then(client => {
-            const db = client.db(DB_NAME)
-            db.collection(LOG_TABLE).insertMany(logs)
-                .then(result => {
-                    client.close()
-                    resolve();
-                })
-                .catch(err => {
-                    client.close();
-                    reject(err);
-                });
-        });
-    });
+    return logModel.find();
 }
 
 function getPersons() {
-    return new Promise((resolve, reject) => {
-        connect().then(client => {
-            const db = client.db(DB_NAME)
-            db.collection(PERSON_TABLE).find().toArray((err, result) => {
-                client.close();
-
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                result = result.map(item => {
-                    item.id = item._id;
-                    item._id = undefined;
-                    return item;
-                })
-                resolve(result);
-            });
-        })
-            .catch(err => {
-                reject(err);
-            });
-    });
+    return userModel.find();
 }
 
 function deletePerson(id) {
-    return new Promise((resolve, reject) => {
-        connect().then(client => {
-            const db = client.db(DB_NAME)
-            var o_id = new mongo.ObjectID(id);
-            db.collection(PERSON_TABLE).deleteOne({ _id: o_id }, (err, obj) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-
-                resolve(obj);
-            });
-        });
-    });
+    return userModel.deleteOne({_id:id});
 }
 
 function addPerson(person) {
-    return new Promise((resolve, reject) => {
-        connect().then(client => {
-            const db = client.db(DB_NAME)
-            db.collection(PERSON_TABLE).insertOne(person)
-                .then(result => {
-                    client.close()
-                    resolve();
-                })
-                .catch(err => {
-                    client.close();
-                    reject(err);
-                });
-        });
-    });
+    return userModel.create(person);
 }
 
 function getDepartment(){
-    return new Promise((resolve, reject) => {
-        connect().then(client => {
-            const db = client.db(DB_NAME)
-            db.collection(DEPARTMENT_TABLE).find().toArray((err, result) => {
-                client.close();
-
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                result = result.map(item => {
-                    item.id = item._id;
-                    item._id = undefined;
-                    return item;
-                })
-                resolve(result);
-            });
-        })
-            .catch(err => {
-                reject(err);
-            });
-    });
+    return departmentModel.find();
 }
 function addDepartment(department){
-    return new Promise((resolve, reject) => {
-        connect().then(client => {
-            const db = client.db(DB_NAME)
-            db.collection(DEPARTMENT_TABLE).insertOne(department)
-                .then(result => {
-                    client.close()
-                    resolve();
-                })
-                .catch(err => {
-                    client.close();
-                    reject(err);
-                });
-        });
-    });
+    return departmentModel.create(department);
 }
 
 function deleteDepartment(id) {
-    return new Promise((resolve, reject) => {
-        connect().then(client => {
-            const db = client.db(DB_NAME)
-            var o_id = new mongo.ObjectID(id);
-            db.collection(DEPARTMENT_TABLE).deleteOne({ _id: o_id }, (err, obj) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-
-                resolve(obj);
-            });
-        });
-    });
+    return departmentModel.deleteOne({_id: id});
 }
 
 function getDoor(){
-    return new Promise((resolve, reject) => {
-        connect().then(client => {
-            const db = client.db(DB_NAME)
-            db.collection(DOOR_TABLE).find().toArray((err, result) => {
-                client.close();
-
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                result = result.map(item => {
-                    item.id = item._id;
-                    item._id = undefined;
-                    return item;
-                })
-                resolve(result);
-            });
-        })
-            .catch(err => {
-                reject(err);
-            });
-    });
+    return doorModel.find();
 }
 function addDoor(door){
-    return new Promise((resolve, reject) => {
-        connect().then(client => {
-            const db = client.db(DB_NAME)
-            db.collection(DOOR_TABLE).insertOne(door)
-                .then(result => {
-                    client.close()
-                    resolve();
-                })
-                .catch(err => {
-                    client.close();
-                    reject(err);
-                });
-        });
-    });
+    return doorModel.create(door);
 }
 
 function deleteDoor(id) {
-    return new Promise((resolve, reject) => {
-        connect().then(client => {
-            const db = client.db(DB_NAME)
-            var o_id = new mongo.ObjectID(id);
-            db.collection(DOOR_TABLE).deleteOne({ _id: o_id }, (err, obj) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-
-                resolve(obj);
-            });
-        });
-    });
+    return doorModel.deleteOne({_id: id});
 }
 
 function getPermission(){
-    return new Promise((resolve, reject) => {
-        connect().then(client => {
-            const db = client.db(DB_NAME)
-            db.collection(PERMISSION_TABLE).find().toArray((err, result) => {
-                client.close();
-
-                if (err) {
-                    reject(err);
-                    return;
-                }
-                result = result.map(item => {
-                    item.id = item._id;
-                    item._id = undefined;
-                    return item;
-                })
-                resolve(result);
-            });
-        })
-            .catch(err => {
-                reject(err);
-            });
-    });
+    return permissionModel.find();
 }
 function addPermission(permission){
-    return new Promise((resolve, reject) => {
-        connect().then(client => {
-            const db = client.db(DB_NAME)
-            db.collection(PERMISSION_TABLE).insertOne(permission)
-                .then(result => {
-                    client.close()
-                    resolve();
-                })
-                .catch(err => {
-                    client.close();
-                    reject(err);
-                });
-        });
-    });
+    return permissionModel.create(permission);
 }
 
 function deletePermission(id) {
-    return new Promise((resolve, reject) => {
-        connect().then(client => {
-            const db = client.db(DB_NAME)
-            var o_id = new mongo.ObjectID(id);
-            db.collection(PERMISSION_TABLE).deleteOne({ _id: o_id }, (err, obj) => {
-                if (err) {
-                    reject(err);
-                    return;
-                }
-
-                resolve(obj);
-            });
-        });
-    });
+    return permissionModel.deleteOne({_id:id});
 }
-
 
 module.exports = {
     getLogs,
@@ -314,7 +62,6 @@ module.exports = {
     getPermission,
     getDoor,
     addPerson,
-    addLogs,
     addDepartment,
     addPermission,
     addDoor,

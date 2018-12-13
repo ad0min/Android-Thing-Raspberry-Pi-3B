@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 
+function init(){
+
+}
+
 const opts = {
   autoReconnect: true,
   reconnectTries: Number.MAX_VALUE,
