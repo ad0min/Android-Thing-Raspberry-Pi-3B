@@ -54,7 +54,7 @@ io.on('connection', socket => {
                         const tmp = await doorModel.findById(data).exec();
                         // console.log(tmp);
                         if (tmp){
-                            _.set(socketList, socket.id.raspId, data);
+                            _.set(socketList, socket.id.doorId, data);
                             callback(CODE_SUCCESS +`;${MESSAGE_SUCCESS}`);
                         }
                         else {
@@ -94,6 +94,22 @@ io.on('connection', socket => {
     })
 });
 
+function emitOpenDoor(doorId) {
+    const socket = _.get(socketList, 'id.doorId', doorId);
+    const code = CODE_REQUEST_OPEN_DOOR;
+    socket.emit('event', code + `;Open door ${doorId}`);
+}
+function emitCloseDoor(doorId) {
+    const socket = _.get(socketList, 'id.doorId', doorId);
+    const code = CODE_REQUEST_CLOSE_DOOR;
+    socket.emit('event', code + `;Close door ${doorId}`);
+}
+function emitLockDoor(doorId) {
+    const socket = _.get(socketList, 'id.doorId', doorId);
+    const code = CODE_REQUEST_LOOK_DOOR;
+    socket.emit('event', code + `;Look door ${doorId}`);
+}
+
 // doorModel.create({name: 'floor 1'});
 // departmentModel.create({name: "department 2"});
 // permissionModel.create({name: "Nhan vien", permission: "100"});
@@ -104,6 +120,12 @@ io.on('connection', socket => {
 
 // io.emit('some event', { for : 'everyone'});
 
-http.listen(3000, function(){
-    console.log('listening on  *:3000');
+http.listen(process.env.PORT, function(){
+    console.log(`listening on  *:${process.env.PORT}`);
 });
+
+module.exports = {
+    emitOpenDoor,
+    emitCloseDoor,
+    emitLockDoor
+}
