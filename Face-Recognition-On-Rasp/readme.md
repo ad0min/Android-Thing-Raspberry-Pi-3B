@@ -14,3 +14,6 @@
 - Install the dependent packages: ```npm install```
 - Run server: ```npm start```
 - To test server, go to url localhost:80.
+
+## To test socket:
+- run ```npm run dev```
