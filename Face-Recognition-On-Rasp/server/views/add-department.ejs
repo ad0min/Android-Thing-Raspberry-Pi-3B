@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Raspberry</title>
+    <link rel="icon" type="image/png" href="image/favicon.ico" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-custom">
+        <a class="navbar-brand" href="/home">
+            <h2>Raspberry Pi</h2>
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/home">Home </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/log">Log</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="/card">card</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="/department">Department</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="/door">Door</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="/permission">Permission</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0" action="/logout" method="post">
+                <button class="btn btn-dark my-2 my-sm-0" type="submit">Logout</button>
+            </form>
+        </div>
+    </nav>
+
+    <div class="container">
+        <form class="form-horizontal" enctype="multipart/form-data" onsubmit="return validateForm();" role="form" method="POST" action="/add-department">
+            <div class="row justify-content-center">
+                <h2 class="text-center">Add new Department</h2>
+            </div>
+            <hr>
+            <div class="row mb-2">
+                <div class="col-md-3 field-label-responsive my-auto">
+                    <div class="input-group-addon float-md-right"><i class="fa fa-clock"></i> Status </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-0" >
+                        <span id="status">waiting......</span>
+                    </div>
+                       
+                </div>
+                
+                <div class="col-md-3">
+                    <span id="error" style="color: red;"></span> 
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 field-label-responsive my-auto">
+                    <div class="input-group-addon float-md-right"><i class="fas fa-user"></i> Department's name: </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-0">
+                        <input type="input" class="form-control" name="name" id="Name">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                </div>
+            </div>
+            <div class="row justify-content-center mb-5">
+                <button type="submit"  class="btn btn-success mx-2"><i class="fa fa-user-plus"></i> Add</button>
+                <a href="/department"><button type="button" class="btn btn-secondary mx-2"><i class="fas fa-eraser"></i> Cancel</button></a>
+           
+            </div>
+        </form>
+    </div>
+
+</body>
+
+<script>
+
+    function validateForm(){
+        // if(document.getElenmentById('#status').value)
+        var status=document.getElementById('status').textContent;
+        console.log(status);
+        // if(status=="waiting......"){
+        //     document.getElementById('error').innerHTML="card is not accepted";
+        //     // alert('okokokok');
+        //     return false;
+
+        // }
+        return true;
+
+    }
+
+
+
+
+
+
+</script>
+
+</html>

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-	<title>card</title>
+	<title>Raspberry</title>
 	<link rel="icon" type="image/png" href="image/favicon.ico" />
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -53,9 +53,9 @@
 	</nav>
 
 	<div class="row justify-content-center my-5 mx-3">
-		<a href="/add-user">
+		<a href="/add-department">
 			<button  class="btn btn-success mx-3 my-1">
-					<i class="fas fa-plus"></i> Add New user
+					<i class="fas fa-plus"></i> Add New User
 				</button>
 		</a>
 
@@ -68,70 +68,39 @@
 	
 	<table class="table">
 		<thead>
+			<th>Num</th>
 			<th>Name</th>
-			<th>Avatar</th>
-			<th>Department</th>
-			<th>Permission</th>
+			
 			<th>Action</th>
 		</thead>
-		<%
-		<!-- console.log(users); -->
-		for(let i = 0;i<users.length;i++){%>
-		<%  const user = users[i];
-			let status = "Authen";
-			let color = "text-success";
-			let blockText = "Block";
-			let blockColor = "btn-danger";
-			let blockIcon = "fa-lock";
-			if(user.status == 0){
-				status = "Blocked";
-				color = "text-danger";
-				blockText = "Unblock";
-				blockColor = "btn-success";
-				blockIcon = "fa-unlock-alt";
-			}
-			let rowColor = "";
-			let image = "";
-			if(user.images.length >0){
-				image = user.images[0];
-			}
-			if(i % 2 == 1){
-				rowColor = "table-info";
-			}
-					%>
-		<tr class="<%=rowColor%>">
+		<% 
+		for(let i=0; i <departments.length; i++){ 
+		%>
+
+		 <tr>
 			<td>
-				<%=user.name%>
+				<%= i+1%>
 			</td>
 			<td>
-				<img class="user-item-image" src="<%=image%>"/>
+				<%= departments[i].name %>
 			</td>
-			<!-- <td>
-				<%=user.name%>
-			</td> -->
-			<td class="<%=color%>">
-				<%=user.department%>
-			</td>
-			<td class="<%=color%>">
-				<%=user.permission%>
-			</td>
+			
 			<td>
 					<a href="#" class="btn btn-info btn-sm my-1">
-							<i class="fas fa-edit"></i> Edit 
+							<i class="fas fa-edit"></i>
 					</a>
-					<a href="/delete-person?id=<%=user.id%>" class="btn btn-danger btn-sm my-1">
-							<i class="fas fa-trash-alt"></i> Delete 
+
+
+					<a href="/delete-department?id=<%=departments[i].id%>" class="btn btn-danger btn-sm my-1">
+							<i class="fas fa-trash-alt"></i> 
 					</a>
 			</td>
 		</tr>
-		<%}%>
+		<% } %>
 	</table>
+
 
 		</div>
 </body>
-
-<script type="text/javascript">
-	console.log(users);
-</script>
 
 </html>

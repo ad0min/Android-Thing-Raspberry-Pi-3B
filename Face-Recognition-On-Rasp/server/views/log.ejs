@@ -32,6 +32,15 @@
 				<li class="nav-item">
 					<a class="nav-link " href="/user">User</a>
 				</li>
+				<li class="nav-item">
+					<a class="nav-link " href="/department">Department</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link " href="/door">Door</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link " href="/permission">Permission</a>
+				</li>
 			</ul>
 			<form class="form-inline my-2 my-lg-0" action="/logout" method="post">
 				<button class="btn btn-dark my-2 my-sm-0" type="submit">Logout</button>
@@ -43,32 +52,22 @@
 		<thead>
 			<th>Date</th>
 			<th>Time</th>
-			<th>Status</th>
+			<th>Department</th>
+			<th>Door</th>
 			<th>Username</th>
 			<th>Image</th>
 		</thead>
 
-		<%for(let i = 0;i<logs.length;i++){%>
-			<%const log = logs[i];
-			let status = "Unlocked";
-			let color = "text-success";
-			if(log.status == 0){
-				status = "Locked";
-				color = "text-danger";
-			}
-			let rowColor = "";
-			if(i % 2 == 1){
-				rowColor = "table-info";
-			}
-			%>
-			<tr class="<%=rowColor%>">
-					<td><%=log.date%></td>
-					<td><%=log.time%></td>
-					<td><div class="<%=color%>"><%=status%></div></td>
-					<td><a href="#"><%=log.username%></a></td>
-					<td><a href="<%=log.image%>">View</a></td>
+		
+			<tr>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td><div ></div></td>
+					<td><a href="#"></a></td>
+					<td><a href=""></a></td>
 			</tr>
-		<%}%>
+		
 
 	</table>
 

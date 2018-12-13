@@ -2,3 +2,5 @@ node_modules/
 public/upload/
 database/data/
 database/log/
+
+.env

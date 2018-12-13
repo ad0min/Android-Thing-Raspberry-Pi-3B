@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Card</title>
+    <title>Raspberry</title>
     <link rel="icon" type="image/png" href="image/favicon.ico" />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,10 +36,10 @@
                     <a class="nav-link" href="/log">Log</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link " href="/user">User</a>
+                    <a class="nav-link " href="/card">card</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link " href="/department">department</a>
+                    <a class="nav-link " href="/department">Department</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link " href="/door">Door</a>
@@ -55,9 +55,9 @@
     </nav>
 
     <div class="container">
-        <form class="form-horizontal" enctype="multipart/form-data" onsubmit="return validateForm();" role="form" method="POST" action="/add-user">
+        <form class="form-horizontal" enctype="multipart/form-data" onsubmit="return validateForm();" role="form" method="POST" action="/add-door">
             <div class="row justify-content-center">
-                <h2 class="text-center">Config new card</h2>
+                <h2 class="text-center">Add new Door</h2>
             </div>
             <hr>
             <div class="row mb-2">
@@ -77,7 +77,7 @@
             </div>
             <div class="row mb-2">
                 <div class="col-md-3 field-label-responsive my-auto">
-                    <div class="input-group-addon float-md-right"><i class="fas fa-user"></i> User's name: </div>
+                    <div class="input-group-addon float-md-right"><i class="fas fa-user"></i> Door's name: </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group mb-0">
@@ -85,19 +85,7 @@
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <span id="error_name" style="color: red;"></span>
-                </div>
-            </div>
-            <div class="row mb-2">
-                <div class="col-md-3 field-label-responsive my-auto">
-                    <div class="input-group-addon float-md-right"><i class="fas fa-image"></i> Images </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-group mb-0">
-                        <input name="images" type="file" id="images" accept="image/gif, image/jpeg, image/png" multiple onchange="selectedFiles(this.files);" />
-                    </div>
-                </div>
-                <div class="col-md-3">
+                    <span id="error_name" style="color:red;"></span>
                 </div>
             </div>
             <div class="row mb-2">
@@ -117,16 +105,16 @@
                     <span id="error_department" style="color:red"></span>
                 </div>
             </div>
-            <div class="row mb-2">
+              <div class="row mb-2">
                 <div class="col-md-3 field-label-responsive my-auto">
-                    <div class="input-group-addon float-md-right"><i class="fas fa-lock"></i> Permission</div>
+                    <div class="input-group-addon float-md-right"><i class="fas fa-lock"></i> Permission </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group mb-0">
                         <select name="permission" id="permission" class="form-control">
                             <option value="-1" selected>None</option>
-                            <option value="1">Level 1</option>
-                            <option value="2">Level 2</option>
+                            <option value="1">Permission 1</option>
+                            <option value="2">Permission 2</option>
                         </select>
                     </div>
                 </div>
@@ -134,16 +122,9 @@
                     <span id="error_permission" style="color:red"></span>
                 </div>
             </div>
-
-            <div class="row mb-2 px-0 mx-0 justify-content-center">
-                <div id="image-list"  class="col-12 row mx-0 justify-content-center">
-                </div>
-                <div class="text-center text-secondary">- Click image to remove it</div>
-            </div>
-
             <div class="row justify-content-center mb-5">
                 <button type="submit"  class="btn btn-success mx-2"><i class="fa fa-user-plus"></i> Add</button>
-                <a href="/user"><button type="button" class="btn btn-secondary mx-2"><i class="fas fa-eraser"></i> Cancel</button></a>
+                <a href="/door"><button type="button" class="btn btn-secondary mx-2"><i class="fas fa-eraser"></i> Cancel</button></a>
            
             </div>
         </form>
@@ -152,7 +133,6 @@
 </body>
 
 <script>
-
     function validateForm(){
         var check=true;
         // if(document.getElenmentById('#status').value)
@@ -160,8 +140,8 @@
         var name=document.getElementById('Name').value;
         var deparment=document.getElementById('department');
             deparment=deparment.options[deparment.selectedIndex].value;
-        var permission = document.getElementById('permission');
-            permission = permission.options[permission.selectedIndex].value;
+        var permission=document.getElementById('dpermission');
+            permission=permission.options[permission.selectedIndex].value;
         console.log(status);
         console.log("name:", name);
         // if(status=="waiting......"){
@@ -174,89 +154,15 @@
             check=false;
         }
         if(deparment==-1){
-            document.getElementById('error_department').innerHTML="you haven't choiced room yet!";
+            document.getElementById('error_department').innerHTML="you haven't choiced department yet!";
             check=false;
         }
         if(permission==-1){
-            document.getElementById('error_permission').innerHTML="you haven't choiced permission yet!"
+            document.getElementById('error_permission').innerHTML="you haven't choiced permission yet!";
+            check=false;
         }
         if(check) return true;
         return false;
-    }
-
-
-
-
-
-
-    var currentFiles = [];
-    var isRender = false;
-    function selectedFiles(files){
-        for(let i = 0;i< files.length;i++){
-            currentFiles.push(files[i]);
-        }
-        previewImage(currentFiles);
-    }
-
-    function previewImage(files) {
-        $("#image-list").empty();
-        console.log("Selected images", files);
-        if (!files || files.length <= 0) {
-            return;
-        }
-        isRender = true;
-        let i = 0;
-        const callback = ()=>{
-            i++;
-            if(i < files.length){
-                showImage(files[i],callback);
-            } else{
-                isRender = false;
-            }
-        }
-        showImage(files[i],callback);
-    }
-
-    function showImage(file,callback){
-        const img = document.createElement("img");
-            img.classList.add('img-fluid');
-            img.classList.add('img-thumbnail');
-            const a = document.createElement("a");
-            a.classList.add("d-block","h-100","person-image-thumbnail","px-1","py-1","mx-1");
-            a.appendChild(img);
-            var div = document.createElement("div");
-            div.classList.add("col-lg-3","col-md-4","col-xs-6","my-1");
-            div.appendChild(a);
-            div.onclick = ()=>{
-                removeImage(file.name);
-            }
-         
-            var reader = new FileReader();
-            reader.onloadend = function () {
-                img.src = reader.result;
-                if(callback){
-                    callback();
-                }
-            }
-            reader.readAsDataURL(file);
-            $("#image-list").append(div);
-    }
-
-    function removeImage(name){
-        console.log('Remove image',name,isRender);
-        if(isRender){
-            return;
-        }
-
-        for(let i = 0;i< currentFiles.length;i++){
-            if(currentFiles[i].name == name){
-                console.log(typeof(currentFiles));
-                currentFiles.splice(i,1);
-                break;
-            }
-        }
-
-        previewImage(currentFiles);
     }
 </script>
 
