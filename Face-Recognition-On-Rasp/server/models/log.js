@@ -5,13 +5,27 @@ const { String, Number, ObjectId } = SchemaTypes;
 
 const logSchema = Schema(
   {
-		name: String, 
-		imageUrl: String,
-		department: {
+		userName: String, 
+		userId: {
 			type: ObjectId,
 			index: true,
     },
-    permission: String,
+		imageUrl: String,
+		departmentId: {
+			type: ObjectId,
+			index: true,
+		},
+		departmentName: String,
+    permissionId: {
+			type: ObjectId,
+			index: true,
+		},
+		permissionName: String,
+		doorId: {
+			type: ObjectId,
+			index: true,
+		},
+		doorName: String
 	}, {
     timestamps: true,
   }

@@ -70,6 +70,8 @@ io.on('connection', socket => {
                         const userData = await userModel.findById(data.id).exec();
                         const permissionData = await permissionModel.findById(userData.permissionId).exec();
                         const departmentData = await departmentModel.findById(userData.departmentId).exec();
+                        const doorId = socketList[socket.id].doorId;
+                        const doorData = await doorModel.findById(doorId).exec();
                         if (userData){
                             //   console.log(data.buffer);
                             var buf = new Buffer(data.buffer.replace(/^data:image\/\w+;base64,/, ""),'base64');
@@ -78,7 +80,21 @@ io.on('connection', socket => {
                             fs.writeFile(imageUrl, buf,(err)=>{
                                 console.log('Write file result',err);
                             });
-                            logModel.create({name: userData.name, permission: permissionData._id, department: departmentData._id, imageUrl});
+                            const log = {userName: userData.name, userId: userData._id};
+                            if(departmentData){
+                                log.departmentId = departmentData._id;
+                                log.departmentName = departmentData.name;
+                            }
+                            log.imageUrl = imageUrl;
+                            if(permissionData){
+                                log.permissionId = permissionData._id;
+                                log.permissionName = permissionData.name;
+                            }
+                            if(doorData){
+                                log.doorId = doorData._id;
+                                log.doorName = doorData.name;
+                            }
+                            logModel.create(log);
                             callback(CODE_SUCCESS +`;${MESSAGE_SUCCESS}`);
                         }
                         else {
