@@ -80,7 +80,10 @@ io.on('connection', socket => {
                             fs.writeFile(imageUrl, buf,(err)=>{
                                 console.log('Write file result',err);
                             });
-                            logModel.create({name: userData.name, permission: permissionData._id, department: departmentData._id, imageUrl});
+                            const faceDetected = JSON.parse(faceRegconitionHeper.recognize('imageUrl'));
+                            console.log(faceDetected);
+
+                            // logModel.create({name: userData.name, permission: permissionData._id, department: departmentData._id, imageUrl, detected: faceDetected});
                             callback(CODE_SUCCESS +`;${MESSAGE_SUCCESS}`);
                         }
                         else {
