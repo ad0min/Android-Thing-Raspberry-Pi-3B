@@ -1,5 +1,7 @@
 require('dotenv').config();
-// require('./mongooseConnection');
+const mongoose = require('mongoose');
+const { Schema, SchemaType } = mongoose;
+require('./mongooseConnection');
 const app = require('express')();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);

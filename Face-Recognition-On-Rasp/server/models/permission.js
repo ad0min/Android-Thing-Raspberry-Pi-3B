@@ -1,5 +1,6 @@
-import mongoose, { Schema, SchemaType } from mongoose;
-import modelType from './type';
+const mongoose = require('mongoose');
+const { Schema, SchemaTypes } = mongoose;
+const modelType = require('./type');
 const { String, Number, ObjectId } = SchemaTypes;
 
 const permissionSchema = Schema(
@@ -9,4 +10,4 @@ const permissionSchema = Schema(
   }
 )
 
-export default mongoose.model(modelType.permissionType, permissionSchema);
+module.exports = mongoose.model(modelType.permissionType, permissionSchema);

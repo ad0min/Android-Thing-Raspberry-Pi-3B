@@ -1,6 +1,6 @@
-import mongoose, { Schema, SchemaType } from mongoose;
-import modelType from './type';
-
+const mongoose = require('mongoose');
+const { Schema, SchemaTypes } = mongoose;
+const modelType = require('./type');
 const { String, Number, ObjectId } = SchemaTypes;
 
 const userSchema = Schema(
@@ -17,4 +17,4 @@ const userSchema = Schema(
 	}
 )
 
-export default mongoose.model(modelType.userType, userSchema);
+module.exports = mongoose.model(modelType.userType, userSchema);
