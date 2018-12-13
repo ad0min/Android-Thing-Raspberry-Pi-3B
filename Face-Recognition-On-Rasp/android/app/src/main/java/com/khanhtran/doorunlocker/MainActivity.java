@@ -144,6 +144,7 @@ public class MainActivity extends Activity {
                         }, 3000);
                         break;
                     case Command.REQUEST_WRITE_DATA:
+                        mIsWriting = true;
                         writeToCard(command.getData1());
                         break;
                 }
@@ -159,6 +160,7 @@ public class MainActivity extends Activity {
             public void onConnectSuccess() {
                 Log.d("iot", "Connect server success at main");
                 changeLedToSystemReady();
+                mIsReading = true;
                 readFromCard();
             }
         });
@@ -239,6 +241,7 @@ public class MainActivity extends Activity {
     }
 
     private void openDoor() {
+        mIsReading = true;
         unlockDoor();
         try {
             mOpenDoor.setValue(true);
@@ -292,9 +295,12 @@ public class MainActivity extends Activity {
         mCamera.takePicture();
     }
 
-    private void writeToCard(String data) {
-        mIsReading = true;
-        mIsWriting = true;
+    private void writeToCard(final String data) {
+        if(!mIsWriting){
+            return;
+        }
+
+        mIsReading = false;
         mCardManager.writeToCard(data, new CardManager.OnResult<Void>() {
             @Override
             public void onSuccess(Void data) {
@@ -302,19 +308,32 @@ public class MainActivity extends Activity {
 
                 Command command = new Command();
                 command.setCode(Command.SUCCESS);
-                command.setData1("");
+                command.setData1(String.valueOf(Command.REQUEST_WRITE_DATA));
+                mIsReading = true;
+                readFromCard();
             }
 
             @Override
             public void onError() {
-                Log.d("iot", "Write error");
+                if(mIsWriting){
+                    writeToCard(data);
+                } else{
+                    Log.d("iot", "Write error");
+                    Command command = new Command();
+                    command.setCode(Command.ERROR);
+                    command.setData1(String.valueOf(Command.REQUEST_WRITE_DATA));
+                    mIsReading = true;
+                    readFromCard();
+                }
+
             }
         });
     }
 
     private void readFromCard() {
-        mIsReading = true;
-        mIsWriting = false;
+        if(!mIsReading || mIsLockedDoor){
+            return;
+        }
         mCardManager.readFromCard(new CardManager.OnResult<String>() {
             @Override
             public void onSuccess(String data) {
@@ -327,7 +346,7 @@ public class MainActivity extends Activity {
 
                 Command command = new Command();
                 command.setCode(Command.CHECK_USER_PERMISSION);
-                command.setData1("5c12ab51b89560592374eb5d");
+                command.setData1(data);
                 mCurrentCommand = command;
                 mServerManager.sendCommand(command);
                 if (mIsReading) {

@@ -94,7 +94,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group mb-0">
-                        <select name="department" id="department" class="form-control">
+                        <select name="departmentId" id="department" class="form-control">
                             <option value="-1" selected>None</option>
                             <% for(let i=0;i< departments.length;i++){ %>
                             <option value="<%=departments[i].id %>"><%= departments[i].name %></option>
@@ -113,7 +113,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group mb-0">
-                        <select name="permission" id="permission" class="form-control">
+                        <select name="minLevelPermission" id="permission" class="form-control">
                             <option value="-1" selected>None</option>
                             <% for(let i=0; i< permissions.length; i++){%>
                             <option value="<%= permissions[i].id %>"><%= permissions[i].name %></option>
@@ -144,7 +144,7 @@
         var name=document.getElementById('Name').value;
         var deparment=document.getElementById('department');
             deparment=deparment.options[deparment.selectedIndex].value;
-        var permission=document.getElementById('dpermission');
+        var permission=document.getElementById('permission');
             permission=permission.options[permission.selectedIndex].value;
         console.log(status);
         console.log("name:", name);

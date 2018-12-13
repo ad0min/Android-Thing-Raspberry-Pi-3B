@@ -81,13 +81,15 @@
 			let department ="";
 			let permission = "";
 			for(let m=0;m < departments.length; m++){
-				if(doors[i].department==departments[m].id){
+				if(doors[i].departmentId==departments[m].id){
 					department=departments[m].name;
+					break;
 				}
 			}
 			for(let n=0;n < permissions.length; n++){
-				if(doors[i].permission == permissions[n].id){
+				if(doors[i].minLevelPermission == permissions[n].id){
 					permission = permissions[n].name;
+					break;
 				}
 			}
 		%>
@@ -129,7 +131,7 @@
 					<i class="fas fa-trash-alt"></i>
 				</a>
 				<br/>
-				<%if(doorId && doorId == doors[i].id){%>
+				<%if(doorId && doorId == doors[i]._id){%>
 					<%=message%>
 				<%}%>
 			</td>

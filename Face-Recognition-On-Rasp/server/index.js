@@ -31,7 +31,7 @@ io.on('connection', socket => {
     socket.on('event', (msg, callback) => {
         console.log(msg);
         const [code, data, error, ...opts] = msg.split(';');
-        console.log(socketList);
+        // console.log(socketList);
         if (!socketList[socket.id].authen) {
             if(code === CODE_AUTHEN){
                 const res = process.env.SERVER_KEY_AUTHEN === data;
@@ -73,7 +73,7 @@ io.on('connection', socket => {
                         const departmentData = await departmentModel.findById(userData.departmentId).exec();
                         console.log(departmentData);
                         if (userData){
-                            logModel.create({name: userData.name, permission: permissionData.permission, department: departmentData.name});
+                            logModel.create({name: userData.name, permission: permissionData._id, department: departmentData._id});
                             callback(CODE_SUCCESS +`;${MESSAGE_SUCCESS}`);
                         }
                         else {
@@ -82,6 +82,16 @@ io.on('connection', socket => {
                     }catch (error){
                         console.log(error);
                         callback(CODE_ERROR + `;Database error`);
+                    }
+                },
+                '200':async (socketList, socket, code, data) => {
+                    if(data == CODE_REQUEST_WRITE_CARD){
+                        console.log('Write card successfull');
+                    }
+                },
+                '500': async (socketList, socket, code, data) => {
+                    if(data == CODE_REQUEST_WRITE_CARD){
+                        console.log('Write card error');
                     }
                 }
             };
@@ -132,6 +142,19 @@ function emitUnlockDoor(doorId) {
     }
 }
 
+function emitWriteToCard(doorId,data) {
+    let success = false;
+    for(let key in socketList){
+        if(socketList[key].doorId == doorId){
+            console.log('Emited write to card ' + doorId + ' - ' + data);
+            const code = CODE_REQUEST_WRITE_CARD;
+            socketList[key].socket.emit('event', code + `;${data}`);
+            success = true;
+        }
+    }
+    return success;
+}
+
 // doorModel.create({name: 'floor 1'});
 // departmentModel.create({name: "department 2"});
 // permissionModel.create({name: "Nhan vien", permission: "100"});
@@ -150,5 +173,6 @@ module.exports = {
     emitOpenDoor,
     emitCloseDoor,
     emitLockDoor,
-    emitUnlockDoor
+    emitUnlockDoor,
+    emitWriteToCard
 }

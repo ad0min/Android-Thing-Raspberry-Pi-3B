@@ -11,7 +11,10 @@ const doorSchema = Schema(
 			type: ObjectId,
 			index: true,
 		},
-		minLevelPermission: Number,
+		minLevelPermission: {
+			type: ObjectId,
+			index: true,
+		},
 	}
 )
 

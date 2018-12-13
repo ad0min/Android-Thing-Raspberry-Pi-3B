@@ -89,14 +89,48 @@ app.get('/log', function (req, res) {
 // });
 
 app.get('/user', function (req, res) {
-	database.getPersons().then(user => {
-		database.getPermission().then(permission =>{
-			database.getDepartment().then(department=>{
-				res.render("user", { users: user , permissions: permission, departments:department});		
+	database.getPersons().then(users => {
+		database.getPermission().then(permissions => {
+			database.getDepartment().then(departments => {
+				database.getDoor().then(doors => {
+					for (let i = 0; i < users.length; i++) {
+						const user = users[i];
+						for (let m = 0; m < departments.length; m++) {
+							if (user.departmentId == departments[m].id) {
+								user.departmentName = departments[m].name;
+								break;
+							}
+						}
+						for (let n = 0; n < permissions.length; n++) {
+							if (user.permissionId == permissions[n].id) {
+								user.permissionLevel = permissions[n].name;
+								break;
+							}
+						}
+					}
+					for(let i = 0;i< doors.length;i++){
+						for(let j = 0;j< departments.length;j++){
+							if(doors[i].departmentId == departments[j].id){
+								doors[i].departmentName = departments[j].name;
+								break;
+							}
+						}
+					}
+
+					console.log("render result user 1: ", users);
+					res.render("user", {
+						users: users,
+						permissions: permissions,
+						departments: departments,
+						doors: doors,
+						status: req.query.status,
+						message: req.query.action + ' ' + req.query.status
+						
+					});
+				});
 			})
 		})
-		console.log("render result user 1: ",user);
-		
+
 	})
 		.catch(err => {
 			console.log(err);
@@ -107,15 +141,16 @@ app.get('/user', function (req, res) {
 app.get('/add-user', (req, res) => {
 	database.getDepartment().then(department => {
 		database.getPermission().then(permission => {
-			res.render('add-user',{ departments:department,permissions:permission});	
+			res.render('add-user', { departments: department, permissions: permission });
 		})
 	})
-	.catch(err=>{
-		console.log(err);
-		res.status(400).send();
-	})
+		.catch(err => {
+			console.log(err);
+			res.status(400).send();
+		})
 	// res.render('add-user');
 });
+
 app.post('/add-user', (req, res) => {
 	console.log("chay chua m");
 	var form = new formidable.IncomingForm();
@@ -225,26 +260,36 @@ app.get('/delete-department', (req, res) => {
 		})
 });
 
-app.get('/door',function (req,res){
+app.get('/door', function (req, res) {
 	database.getDoor().then(door => {
 		database.getDepartment().then(department => {
 			database.getPermission().then(permission => {
-				res.render('door',{doors: door, departments:department, permissions: permission}); 		
+				res.render('door', {
+					doors: door,
+					departments: department,
+					permissions: permission,
+					doorId: req.query.id,
+					message: req.query.action + ' ' + req.query.status
+				});
+				console.log({
+					doorId: req.query.id,
+					message: req.query.action + ' ' + req.query.status
+				});
 			})
 		})
 	})
 })
 
-app.get('/add-door',function (req,res){
+app.get('/add-door', function (req, res) {
 	database.getDepartment().then(department => {
 		database.getPermission().then(permission => {
-			res.render('add-door',{ departments:department,permissions:permission});	
+			res.render('add-door', { departments: department, permissions: permission });
 		})
 	})
-	.catch(err=>{
-		console.log(err);
-		res.status(400).send();
-	})
+		.catch(err => {
+			console.log(err);
+			res.status(400).send();
+		})
 })
 app.post('/add-door', (req, res) => {
 	console.log("add door chay chua m");
@@ -263,6 +308,7 @@ app.post('/add-door', (req, res) => {
 		}
 	});
 });
+
 app.get('/delete-door', (req, res) => {
 	const id = req.query.id;
 	console.log('delete door', id);
@@ -296,12 +342,12 @@ app.post('/add-permission', (req, res) => {
 	form.parse(req, function (err, fields) {
 		console.log("data insert permission: ", fields);
 		try {
-			database.addPermission(fields).then(result=>{
+			database.addPermission(fields).then(result => {
 				res.redirect('/permission');
 			})
-			.catch(err=>{
-				res.redirect('/permission');
-			});
+				.catch(err => {
+					res.redirect('/permission');
+				});
 
 		} catch (err) {
 			console.log(err);
@@ -377,7 +423,20 @@ app.get('/door/take-picture', (req, res) => {
 	res.redirect('/door?action=Take picture&status=success&id=' + id);
 });
 
-
+app.post('/write-user', (req, res) => {
+	var form = new formidable.IncomingForm();
+	form.parse(req, function (err, fields) {
+		try {
+			console.log("data write to card: ", fields);
+			let success = socketManager.emitWriteToCard(fields['doorId'],fields['userId']);
+			let status = success?'success':'error';
+			res.redirect('/user?action=Write data to card&status=' + status);
+		} catch (err) {
+			console.log(err);
+			res.status(403).send();
+		}
+	});
+});
 
 
 

@@ -11,5 +11,5 @@ public class DefaultConfig {
     public static final String STATUS_GREEN_PIN = "BCM6";
     public static final String RESET_PIN = "BCM25";
     public static final String DOOR_AUTHEN_KEY = "iot-2018-kdv";
-    public static final String DOOR_ID = "5c12c4f50dbf3125dbaeb46f";
+    public static final String DOOR_ID = "5c12d4d1e8245e32b9cd02f0";
 }

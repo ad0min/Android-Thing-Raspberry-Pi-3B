@@ -11,7 +11,8 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU"
+	 crossorigin="anonymous">
 	<link rel="stylesheet" href="/css/styles.css" />
 </head>
 
@@ -52,18 +53,70 @@
 		</div>
 	</nav>
 
-	<div class="row justify-content-center my-5 mx-3">
+	<div class="row justify-content-center my-2 mx-3">
 		<a href="/add-user">
-			<button  class="btn btn-success mx-3 my-1">
-					<i class="fas fa-plus"></i> Add New user
-				</button>
+			<button class="btn btn-success mx-3 my-1">
+				<i class="fas fa-plus"></i> Add New user
+			</button>
 		</a>
-
-
-		<button class="btn btn-info mx-3 my-1">
-			<i class="fas fa-sync-alt"></i> Sync with Device
-		</button>
+	</div>
+	<div class="row justify-content-center mx-3">
+			<h4>Make a card for user</h4>
+		</div>
 	
+	<div class="row justify-content-center mx-3">
+		<form class="col-12" method="POST" action="/write-user"  enctype="multipart/form-data">
+			<div class="row mb-2">
+					<div class="col-md-3 field-label-responsive my-auto">
+						<div class="input-group-addon float-md-right"><i class="fas fa-lock"></i> Users </div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group mb-0">
+							<select name="userId" id="department" class="form-control">
+								<option value="-1" selected>None</option>
+								<% for(let i=0;i< users.length;i++){ %>
+								<option value="<%=users[i].id %>">
+									<%= users[i].name + ' - ' + users[i].departmentName %> 
+								</option>
+								<% } %>
+								<!-- <option value="2">Department 2</option> -->
+							</select>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<span id="error_department" style="color:red"></span>
+					</div>
+				</div>
+				<div class="row mb-2">
+					<div class="col-md-3 field-label-responsive my-auto">
+						<div class="input-group-addon float-md-right"><i class="fas fa-lock"></i> Scan door</div>
+					</div>
+					<div class="col-md-6">
+						<div class="form-group mb-0">
+							<select name="doorId" id="permission" class="form-control">
+								<option value="-1" selected>None</option>
+								<% for(let i=0; i< doors.length; i++){%>
+								<option value="<%= doors[i].id %>">
+									<%= doors[i].name + ' ' + doors[i].departmentName %>
+								</option>
+								<% } %>
+								<!-- <option value="2">Level 2</option> -->
+							</select>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<span id="error_permission" style="color:red"></span>
+					</div>
+				</div>
+				<div class="row justify-content-center mb-5">
+						<button type="submit"  class="btn btn-success mx-2"><i class="fa fa-user-plus"></i> Write</button>		
+				</div>	
+				<div class="row justify-content-center mb-5">
+						<%if(status){%>
+							<%=message%>
+							<%}%>
+				</div>	
+		</form>
 	</div>
 
 
@@ -78,30 +131,19 @@
 		<%let len = users.length;
 		for(let i = 0;i< len; i++){%>
 		<%  const user = users[i];
-			let department="";
-			let permission="";
+			let department=user.departmentName;
+			let permission=user.permissionLevel;
 			let image = "";
 			if(user.avatar){
 				image = user.avatar;
 			}
-			for(let m=0;m < departments.length; m++){
-				if(user.department==departments[m].id){
-					department=departments[m].name;
-				}
-			}
-			for(let n=0;n < permissions.length; n++){
-				if(user.permission == permissions[n].id){
-					permission = permissions[n].name;
-				}
-			}
-			
 		%>
 		<tr>
 			<td>
 				<%=user.name%>
 			</td>
 			<td>
-				<img class="user-item-image" src="<%=image%>"/>
+				<img class="user-item-image" src="<%=image%>" />
 			</td>
 			<!-- <td >
 				<%=user.name%>
@@ -113,18 +155,18 @@
 				<%=permission%>
 			</td>
 			<td>
-					<a href="#" class="btn btn-info btn-sm my-1">
-							<i class="fas fa-edit"></i> Edit 
-					</a>
-					<a href="/delete-person?id=<%=user._id%>" class="btn btn-danger btn-sm my-1">
-							<i class="fas fa-trash-alt"></i> Delete 
-					</a>
+				<a href="#" class="btn btn-info btn-sm my-1">
+					<i class="fas fa-edit"></i> Edit
+				</a>
+				<a href="/delete-person?id=<%=user._id%>" class="btn btn-danger btn-sm my-1">
+					<i class="fas fa-trash-alt"></i> Delete
+				</a>
 			</td>
 		</tr>
 		<%}%>
 	</table>
 
-		</div>
+	</div>
 </body>
 
 </html>
