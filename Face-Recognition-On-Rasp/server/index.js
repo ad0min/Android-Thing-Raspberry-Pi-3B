@@ -8,6 +8,8 @@ const io = require('socket.io')(http);
 const _ = require('lodash');
 var fs = require('fs');
 
+const faceRegconitionHeper = require('./face_recognition/faceRegconitionHeper');
+
 const modelType = require('./models/type');
 const doorModel = mongoose.model(modelType.doorType);
 const userModel = mongoose.model(modelType.userType);
@@ -72,9 +74,13 @@ io.on('connection', socket => {
                         if (userData){
                             console.log(data.buffer);
                             var buf = new Buffer(data.buffer.replace(/^data:image\/\w+;base64,/, ""),'base64');
-                            var imageUrl = '../database/image/log/' + userData.name + userData.id + Date.now(); 
+                            var imageUrl = './database/image/log/' + userData.name + userData.id +'/' + Date.now(); 
                             fs.writeFile(imageUrl, buf);
-                            logModel.create({name: userData.name, permission: permissionData.permission, department: departmentData.name, imageUrl});
+
+                            const detetedData = faceRegconitionHeper.recognize(imageUrl);
+                            console.log(detetedData);
+
+                            // logModel.create({name: userData.name, permission: permissionData.permission, department: departmentData.name, imageUrl, detected: detetedData});
                             callback(CODE_SUCCESS +`;${MESSAGE_SUCCESS}`);
                         }
                         else {
