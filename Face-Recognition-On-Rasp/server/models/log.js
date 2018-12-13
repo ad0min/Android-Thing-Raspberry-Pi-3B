@@ -3,18 +3,18 @@ const { Schema, SchemaTypes } = mongoose;
 const modelType = require('./type');
 const { String, Number, ObjectId } = SchemaTypes;
 
-const userSchema = Schema(
+const logSchema = Schema(
   {
 		name: String, 
-		avatar: String,
-		departmentId: {
+		imageUrl: String,
+		department: {
 			type: ObjectId,
 			index: true,
-		},
-		permissionId: {
-			type: ObjectId,
-		}
-	}
+    },
+    permission: String,
+	}, {
+    timestamps: true,
+  }
 )
 
-module.exports = mongoose.model(modelType.userType, userSchema);
+module.exports = mongoose.model(modelType.logType, logSchema);
