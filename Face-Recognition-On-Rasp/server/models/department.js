@@ -5,7 +5,10 @@ const { String, Number, ObjectId } = SchemaTypes;
 
 const departmentSchema = Schema(
   {
-    name: String,
+    name: {
+      type: String,
+      index: true,
+    }
   }
 )
 
