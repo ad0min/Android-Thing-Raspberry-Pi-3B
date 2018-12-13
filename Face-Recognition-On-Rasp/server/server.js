@@ -73,6 +73,7 @@ app.get('/log', function (req, res) {
 
 			return item;
 		});
+		console.log('Log data',result);
 		res.render("log", { logs: result });
 	}).catch(err => {
 
