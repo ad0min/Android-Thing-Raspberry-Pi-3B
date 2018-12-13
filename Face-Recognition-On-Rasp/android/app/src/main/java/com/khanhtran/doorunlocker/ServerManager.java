@@ -251,13 +251,13 @@ public class ServerManager {
 
     public void sendCommand(Command cm){
         if(mIsConnected){
+            Log.d("iot","Send command " + cm.toString());
             mSocket.emit("event", cm.toString(), new Ack() {
                 @Override
                 public void call(Object... args) {
                     Command command;
                     try {
                         String cm = String.valueOf(args[0]);
-                        Log.d("iot","Command string " + cm);
                         command = new Command(cm);
 
                     } catch (Exception ex){

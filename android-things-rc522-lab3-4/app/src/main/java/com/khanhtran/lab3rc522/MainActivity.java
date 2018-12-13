@@ -155,7 +155,7 @@ public class MainActivity extends Activity {
         Log.d("Lab3","Write data successfully");
     }
 
-    private interface FlashCallback{
+       private interface FlashCallback{
         void finish();
     }
     private void flashLed(final Gpio led, int count, final FlashCallback callback){

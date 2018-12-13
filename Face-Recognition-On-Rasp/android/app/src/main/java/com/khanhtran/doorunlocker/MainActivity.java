@@ -52,6 +52,7 @@ public class MainActivity extends Activity {
     private boolean mAllowFlashStatus = false;
     private boolean mIsReading = false;
     private boolean mIsWriting = false;
+    private Command mCurrentCommand;
 
 
     @Override
@@ -118,9 +119,28 @@ public class MainActivity extends Activity {
                         break;
                     case Command.SUCCESS:
                         Log.d("iot","Success " + command.toString());
+                        if(mCurrentCommand != null && mCurrentCommand.getCode() == Command.CHECK_USER_PERMISSION){
+                            openDoor();
+                            mHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    closeDoor();
+                                }
+                            },5000);
+                        }
                         break;
                     case Command.ERROR:
                         Log.d("iot","Error " + command.toString());
+                            flashStatusLed(new boolean[]{true,false,false});
+                            mHandler.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    changeLedToSystemReady();
+                                }
+                        },3000);
+                        break;
+                    case Command.REQUEST_WRITE_DATA:
+                        writeToCard(command.getData1());
                         break;
                 }
             }
@@ -255,6 +275,10 @@ public class MainActivity extends Activity {
             @Override
             public void onSuccess(Void data) {
                 Log.d("iot", "Write successfully");
+
+                Command command = new Command();
+                command.setCode(Command.SUCCESS);
+                command.setData1("");
             }
 
             @Override
@@ -275,10 +299,16 @@ public class MainActivity extends Activity {
 
                 Command command = new Command();
                 command.setCode(Command.CHECK_USER_PERMISSION);
-                command.setData1(data);
+                command.setData1("5c12ab51b89560592374eb5d");
+                mCurrentCommand = command;
                 mServerManager.sendCommand(command);
                 if(mIsReading){
-                    readFromCard();
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            readFromCard();
+                        }
+                    },800);
                 }
             }
 
@@ -286,7 +316,12 @@ public class MainActivity extends Activity {
             public void onError() {
 //                Log.d("iot", "read data from card error");
                 if(mIsReading) {
-                    readFromCard();
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            readFromCard();
+                        }
+                    },800);
                 }
             }
         });

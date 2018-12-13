@@ -55,7 +55,7 @@
     </nav>
 
     <div class="container">
-        <form class="form-horizontal" enctype="multipart/form-data" onsubmit="return validateForm();" role="form" method="POST" action="/add-person">
+        <form class="form-horizontal" enctype="multipart/form-data" onsubmit="return validateForm();" role="form" method="POST" action="/add-permission">
             <div class="row justify-content-center">
                 <h2 class="text-center">Add new Permission</h2>
             </div>
@@ -81,7 +81,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group mb-0">
-                        <input type="input" class="form-control" name="Name" id="Name">
+                        <input type="input" class="form-control" name="name" id="Name">
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -94,7 +94,7 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-group mb-0">
-                        <input type="input" name="Level" id="Level" class="form-control">
+                        <input type="input" name="level" id="Level" class="form-control">
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -119,11 +119,11 @@
         var name=document.getElementById('Name').value;
         var level=document.getElementById('Level').value;
     
-        if(status=="waiting......"){
-            document.getElementById('error').innerHTML="card is not accepted";
+        // if(status=="waiting......"){
+        //     document.getElementById('error').innerHTML="card is not accepted";
 
-            check=false;
-        }
+        //     check=false;
+        // }
         if(name==""){
             document.getElementById('error_name').innerHTML="Space is not allowed";
             check=false;

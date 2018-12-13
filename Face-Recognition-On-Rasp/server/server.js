@@ -258,8 +258,17 @@ app.get('/delete-door', (req, res) => {
 		})
 });
 
+<<<<<<< HEAD
 app.get('/permission', function (req, res) {
 	res.render('permission'); //need to edit later
+=======
+app.get('/permission',function (req,res){
+	database.getPermission().then(result => {
+		console.log(result);
+		res.render('permission',{permissions: result});
+	})
+	// res.render('permission'); //need to edit later
+>>>>>>> b7929dae600b2fe6797105eec467c5cfbf745c20
 })
 
 app.get('/add-permission', function (req, res) {
@@ -274,8 +283,13 @@ app.post('/add-permission', (req, res) => {
 	form.parse(req, function (err, fields) {
 
 		try {
+<<<<<<< HEAD
 			database.addDoor(fields);
 			console.log("data insert permission: ", fields);
+=======
+			database.addPermission(fields);
+			console.log("data insert permission: ",fields);
+>>>>>>> b7929dae600b2fe6797105eec467c5cfbf745c20
 			res.redirect('/permission');
 		} catch (err) {
 			console.log(err);
@@ -283,17 +297,31 @@ app.post('/add-permission', (req, res) => {
 		}
 	});
 });
+<<<<<<< HEAD
 app.get('/delete-door', (req, res) => {
 	const id = req.query.id;
 	console.log('delete door', id);
 	database.deleteDoor(id).then(result => {
+=======
+app.get('/delete-permission', (req,res)=>{
+	const id = req.query.id;
+	console.log('delete permission',id);
+	database.deletePermission(id).then(result=>{
+>>>>>>> b7929dae600b2fe6797105eec467c5cfbf745c20
 		console.log(result);
-		res.redirect('/door');
+		res.redirect('/permission');
 	})
+<<<<<<< HEAD
 		.catch(err => {
 			console.log(err);
 			res.redirect('/door');
 		})
+=======
+	.catch(err=>{
+		console.log(err);
+		res.redirect('/permission');
+	})
+>>>>>>> b7929dae600b2fe6797105eec467c5cfbf745c20
 });
 
 app.post('/logout', function (req, res) {

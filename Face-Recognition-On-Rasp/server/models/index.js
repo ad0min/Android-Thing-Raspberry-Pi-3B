@@ -4,6 +4,7 @@ require('./door');
 require('./permission');
 require('./user');
 require('./department');
+require('./log');
 
 // export default {
 // };
