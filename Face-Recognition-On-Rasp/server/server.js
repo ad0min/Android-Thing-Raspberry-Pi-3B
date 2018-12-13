@@ -84,9 +84,14 @@ app.post('/add-log', bodyParser.raw(), (req, res) => {
 });
 
 app.get('/user', function (req, res) {
-	database.getPersons().then(result => {
-		console.log("render result user 1: ",result);
-		res.render("user", { users: result });
+	database.getPersons().then(user => {
+		database.getPermission().then(permission =>{
+			database.getDepartment().then(department=>{
+				res.render("user", { users: user , permissions: permission, departments:department});		
+			})
+		})
+		console.log("render result user 1: ",user);
+		
 	})
 		.catch(err => {
 			console.log(err);
@@ -95,7 +100,16 @@ app.get('/user', function (req, res) {
 });
 
 app.get('/add-user', (req, res) => {
-	res.render('add-user');
+	database.getDepartment().then(department => {
+		database.getPermission().then(permission => {
+			res.render('add-user',{ departments:department,permissions:permission});	
+		})
+	})
+	.catch(err=>{
+		console.log(err);
+		res.status(400).send();
+	})
+	// res.render('add-user');
 });
 app.post('/add-user', (req, res) => {
 	console.log("chay chua m");
@@ -210,14 +224,25 @@ app.get('/delete-department', (req,res)=>{
 });
 
 app.get('/door',function (req,res){
-	database.getDoor().then(result => {
-		console.log(result);
-		res.render('door',{doors: result}); //need to edit later	
+	database.getDoor().then(door => {
+		database.getDepartment().then(department => {
+			database.getPermission().then(permission => {
+				res.render('door',{doors: door, departments:department, permissions: permission}); 		
+			})
+		})
 	})
 })
 
 app.get('/add-door',function (req,res){
-	res.render('add-door'); //need to edit later
+	database.getDepartment().then(department => {
+		database.getPermission().then(permission => {
+			res.render('add-door',{ departments:department,permissions:permission});	
+		})
+	})
+	.catch(err=>{
+		console.log(err);
+		res.status(400).send();
+	})
 })
 app.post('/add-door', (req, res) => {
 	console.log("add door chay chua m");

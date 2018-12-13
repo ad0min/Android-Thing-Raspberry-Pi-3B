@@ -305,7 +305,30 @@ function deletePermission(id) {
         });
     });
 }
-
+        
+function getDataWithCondition(tb_name,condition){
+    return new Promise((resolve, reject) =>{
+        connect().then(client => {
+            const db = client.db(DB_NAME)
+            db.collection(tb_name).find(condition).toArray((err,result)=>{
+                client.close();
+                if(err){
+                    reject(err);
+                    return;
+                }
+                result = result.map(item =>{
+                    item.id = item._id;
+                    item._id=undefined;
+                    return item;
+                })
+                resolve(result);
+            });
+        })
+            .catch(err=>{
+                reject(err);
+            })
+    });
+}
 
 module.exports = {
     getLogs,
@@ -321,5 +344,6 @@ module.exports = {
     deletePerson,
     deleteDepartment,
     deletePermission,
-    deleteDoor
+    deleteDoor,
+    getDataWithCondition
 }

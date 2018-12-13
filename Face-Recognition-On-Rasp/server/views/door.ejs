@@ -2,7 +2,7 @@
 <html>
 
 <head>
-	<title>Raspberry</title>
+	<title>Door</title>
 	<link rel="icon" type="image/png" href="image/favicon.ico" />
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -73,16 +73,29 @@
 			<th>Permission</th>
 			<th>Action</th>
 		</thead>
-		<% for(let i=0; i <doors.length; i++){ %>
+		<% for(let i=0; i < doors.length; i++){ 
+			let department ="";
+			let permission = "";
+			for(let m=0;m < departments.length; m++){
+				if(doors[i].department==departments[m].id){
+					department=departments[m].name;
+				}
+			}
+			for(let n=0;n < permissions.length; n++){
+				if(doors[i].permission == permissions[n].id){
+					permission = permissions[n].name;
+				}
+			}
+		%>
 		 <tr>
 			<td>
 				<%= doors[i].name %>
 			</td>
 			<td>
-				<%=doors[i].department %>
+				<%=department %>
 			</td>
 			<td>
-				<%=doors[i].permission %>
+				<%=permission %>
 			</td>
 			<td>
 					<a href="#" class="btn btn-info btn-sm my-1">
