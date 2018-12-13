@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Card</title>
+    <title>User</title>
     <link rel="icon" type="image/png" href="image/favicon.ico" />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -108,8 +108,10 @@
                     <div class="form-group mb-0">
                         <select name="department" id="department" class="form-control">
                             <option value="-1" selected>None</option>
-                            <option value="1">Department 1</option>
-                            <option value="2">Department 2</option>
+                            <% for(let i=0;i< departments.length;i++){ %>
+                            <option value="<%=departments[i].id %>"><%= departments[i].name %></option>
+                            <% } %>
+                            <!-- <option value="2">Department 2</option> -->
                         </select>
                     </div>
                 </div>
@@ -125,8 +127,10 @@
                     <div class="form-group mb-0">
                         <select name="permission" id="permission" class="form-control">
                             <option value="-1" selected>None</option>
-                            <option value="1">Level 1</option>
-                            <option value="2">Level 2</option>
+                            <% for(let i=0; i< permissions.length; i++){%>
+                            <option value="<%= permissions[i].id %>"><%= permissions[i].name %></option>
+                            <% } %>
+                            <!-- <option value="2">Level 2</option> -->
                         </select>
                     </div>
                 </div>

@@ -55,6 +55,7 @@ function deletePermission(id) {
     return permissionModel.deleteOne({_id:id});
 }
 
+
 module.exports = {
     getLogs,
     getPersons,
@@ -68,5 +69,5 @@ module.exports = {
     deletePerson,
     deleteDepartment,
     deletePermission,
-    deleteDoor
+    deleteDoor,
 }

@@ -89,9 +89,14 @@ app.get('/log', function (req, res) {
 // });
 
 app.get('/user', function (req, res) {
-	database.getPersons().then(result => {
-		console.log("render result user 1: ", result, "length ",result.length);
-		res.render("user", { users: result });
+	database.getPersons().then(user => {
+		database.getPermission().then(permission =>{
+			database.getDepartment().then(department=>{
+				res.render("user", { users: user , permissions: permission, departments:department});		
+			})
+		})
+		console.log("render result user 1: ",user);
+		
 	})
 		.catch(err => {
 			console.log(err);
@@ -100,7 +105,16 @@ app.get('/user', function (req, res) {
 });
 
 app.get('/add-user', (req, res) => {
-	res.render('add-user');
+	database.getDepartment().then(department => {
+		database.getPermission().then(permission => {
+			res.render('add-user',{ departments:department,permissions:permission});	
+		})
+	})
+	.catch(err=>{
+		console.log(err);
+		res.status(400).send();
+	})
+	// res.render('add-user');
 });
 app.post('/add-user', (req, res) => {
 	console.log("chay chua m");
@@ -211,26 +225,26 @@ app.get('/delete-department', (req, res) => {
 		})
 });
 
-app.get('/door', function (req, res) {
-	const params = req.query;
-	let status;
-	let message;
-	if (params.action && params.status) {
-		message = params.action + ' ' + params.status;
-		status = params.status;
-	}
-
-	database.getDoor().then(result => {
-		// console.log(result);
-		res.render('door', {
-			doors: result, message: message, status: status,
-			doorId: params.id
-		}); //need to edit later	
+app.get('/door',function (req,res){
+	database.getDoor().then(door => {
+		database.getDepartment().then(department => {
+			database.getPermission().then(permission => {
+				res.render('door',{doors: door, departments:department, permissions: permission}); 		
+			})
+		})
 	})
 })
 
-app.get('/add-door', function (req, res) {
-	res.render('add-door'); //need to edit later
+app.get('/add-door',function (req,res){
+	database.getDepartment().then(department => {
+		database.getPermission().then(permission => {
+			res.render('add-door',{ departments:department,permissions:permission});	
+		})
+	})
+	.catch(err=>{
+		console.log(err);
+		res.status(400).send();
+	})
 })
 app.post('/add-door', (req, res) => {
 	console.log("add door chay chua m");
@@ -280,11 +294,15 @@ app.post('/add-permission', (req, res) => {
 	form.multiples = true;
 
 	form.parse(req, function (err, fields) {
-
+		console.log("data insert permission: ", fields);
 		try {
-			database.addPermission(fields);
-			console.log("data insert permission: ", fields);
-			res.redirect('/permission');
+			database.addPermission(fields).then(result=>{
+				res.redirect('/permission');
+			})
+			.catch(err=>{
+				res.redirect('/permission');
+			});
+
 		} catch (err) {
 			console.log(err);
 			res.status(403).send();

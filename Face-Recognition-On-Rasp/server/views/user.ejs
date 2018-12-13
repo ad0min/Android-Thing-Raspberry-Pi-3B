@@ -2,7 +2,7 @@
 <html>
 
 <head>
-	<title>card</title>
+	<title>User</title>
 	<link rel="icon" type="image/png" href="image/favicon.ico" />
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
@@ -78,42 +78,39 @@
 		<%let len = users.length;
 		for(let i = 0;i< len; i++){%>
 		<%  const user = users[i];
-			let status = "Authen";
-			let color = "text-success";
-			let blockText = "Block";
-			let blockColor = "btn-danger";
-			let blockIcon = "fa-lock";
-			if(user.status == 0){
-				status = "Blocked";
-				color = "text-danger";
-				blockText = "Unblock";
-				blockColor = "btn-success";
-				blockIcon = "fa-unlock-alt";
-			}
-			let rowColor = "";
+			let department="";
+			let permission="";
 			let image = "";
 			if(user.avatar){
 				image = user.avatar;
 			}
-			if(i % 2 == 1){
-				rowColor = "table-info";
+			for(let m=0;m < departments.length; m++){
+				if(user.department==departments[m].id){
+					department=departments[m].name;
+				}
 			}
-					%>
-		<tr class="<%=rowColor%>">
+			for(let n=0;n < permissions.length; n++){
+				if(user.permission == permissions[n].id){
+					permission = permissions[n].name;
+				}
+			}
+			
+		%>
+		<tr>
 			<td>
 				<%=user.name%>
 			</td>
 			<td>
 				<img class="user-item-image" src="<%=image%>"/>
 			</td>
-			<!-- <td>
+			<!-- <td >
 				<%=user.name%>
 			</td> -->
-			<td class="<%=color%>">
-				<%=user.department%>
+			<td>
+				<%=department%>
 			</td>
-			<td class="<%=color%>">
-				<%=user.permission%>
+			<td>
+				<%=permission%>
 			</td>
 			<td>
 					<a href="#" class="btn btn-info btn-sm my-1">
