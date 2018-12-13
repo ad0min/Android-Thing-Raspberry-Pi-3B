@@ -6,6 +6,7 @@ const app = require('express')();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 const _ = require('lodash');
+var fs = require('fs');
 
 const modelType = require('./models/type');
 const doorModel = mongoose.model(modelType.doorType);
@@ -13,6 +14,7 @@ const userModel = mongoose.model(modelType.userType);
 const logModel = mongoose.model(modelType.logType);
 const departmentModel = mongoose.model(modelType.departmentType);
 const permissionModel = mongoose.model(modelType.permissionType);
+
 
 const { CODE_AUTHEN, CODE_REQUEST_CLOSE_DOOR, CODE_ERROR, CODE_REQUEST_LOCK_DOOR, CODE_REQUEST_OPEN_DOOR, CODE_RASP_INFO, CODE_CHECK_PERMISION_CARD, CODE_REQUEST_RASP_INFO, CODE_REQUEST_TAKE_PICTURE, CODE_REQUEST_WRITE_CARD, CODE_SUCCESS, MESSAGE_SUCCESS} = require('./const');
 
@@ -47,12 +49,10 @@ io.on('connection', socket => {
             }
         }
         else{
-            console.log(code);
             const responseCode = {
                 '002': async (socketList, socket, code, data) => {
                     try {
                         const tmp = await doorModel.findById(data).exec();
-                        // console.log(tmp);
                         if (tmp){
                             _.set(socketList, socket.id.doorId, data);
                             callback(CODE_SUCCESS +`;${MESSAGE_SUCCESS}`);
@@ -67,13 +67,14 @@ io.on('connection', socket => {
                 '300': async(socketList, socket, code, data) => {
                     try {
                         const userData = await userModel.findById(data).exec();
-                        console.log(userData);
                         const permissionData = await permissionModel.findById(userData.permissionId).exec();
-                        console.log(permissionData);
                         const departmentData = await departmentModel.findById(userData.departmentId).exec();
-                        console.log(departmentData);
                         if (userData){
-                            logModel.create({name: userData.name, permission: permissionData.permission, department: departmentData.name});
+                            console.log(data.buffer);
+                            var buf = new Buffer(data.buffer.replace(/^data:image\/\w+;base64,/, ""),'base64');
+                            var imageUrl = '../database/image/log/' + userData.name + userData.id + Date.now(); 
+                            fs.writeFile(imageUrl, buf);
+                            logModel.create({name: userData.name, permission: permissionData.permission, department: departmentData.name, imageUrl});
                             callback(CODE_SUCCESS +`;${MESSAGE_SUCCESS}`);
                         }
                         else {
