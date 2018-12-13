@@ -11,7 +11,11 @@ const logSchema = Schema(
 			type: ObjectId,
 			index: true,
     },
-    permission: String,
+		permission: String,
+		detected: [{
+			name: String,
+			prob: String,
+		}]
 	}, {
     timestamps: true,
   }

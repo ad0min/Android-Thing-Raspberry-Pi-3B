@@ -8,6 +8,8 @@ const io = require('socket.io')(http);
 const _ = require('lodash');
 var fs = require('fs');
 
+const faceRegconitionHeper = require('./face_recognition/faceRegconitionHeper');
+
 const modelType = require('./models/type');
 const doorModel = mongoose.model(modelType.doorType);
 const userModel = mongoose.model(modelType.userType);
