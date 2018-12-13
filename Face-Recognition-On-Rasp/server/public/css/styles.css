@@ -7,7 +7,7 @@
 }
 
 .home-item{
-    width: 25rem;
+    width: 15rem;
 }
 
 .home-item:hover{
@@ -16,7 +16,7 @@
 
 .home-item-icon{
     width: 65%;
-    max-height: 15em;
+    max-height: 8em;
 }
 
 .user-item-image{
