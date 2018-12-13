@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Rapsberry</title>
+    <title>Card</title>
     <link rel="icon" type="image/png" href="image/favicon.ico" />
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -36,10 +36,16 @@
                     <a class="nav-link" href="/log">Log</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link " href="/card">card</a>
+                    <a class="nav-link " href="/user">User</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link " href="/rapsberry">Rapsberry</a>
+                    <a class="nav-link " href="/department">department</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="/door">Door</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link " href="/permission">Permission</a>
                 </li>
             </ul>
             <form class="form-inline my-2 my-lg-0" action="/logout" method="post">
@@ -49,9 +55,9 @@
     </nav>
 
     <div class="container">
-        <form class="form-horizontal" enctype="multipart/form-data" onsubmit="return validateForm();" role="form" method="POST" action="/add-person">
+        <form class="form-horizontal" enctype="multipart/form-data" onsubmit="return validateForm();" role="form" method="POST" action="/add-user">
             <div class="row justify-content-center">
-                <h2 class="text-center">Config new rapsberry</h2>
+                <h2 class="text-center">Config new card</h2>
             </div>
             <hr>
             <div class="row mb-2">
@@ -71,20 +77,18 @@
             </div>
             <div class="row mb-2">
                 <div class="col-md-3 field-label-responsive my-auto">
-                    <div class="input-group-addon float-md-right"><i class="fas fa-lock"></i> Security </div>
+                    <div class="input-group-addon float-md-right"><i class="fas fa-user"></i> User's name: </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group mb-0">
-                        <select name="security" class="form-control">
-                            <option value="1">Level 1</option>
-                            <option value="2" selected>Level 2</option>
-                        </select>
+                        <input type="input" class="form-control" name="name" id="Name">
                     </div>
                 </div>
                 <div class="col-md-3">
+                    <span id="error_name" style="color: red;"></span>
                 </div>
             </div>
-            <!-- <div class="row mb-2">
+            <div class="row mb-2">
                 <div class="col-md-3 field-label-responsive my-auto">
                     <div class="input-group-addon float-md-right"><i class="fas fa-image"></i> Images </div>
                 </div>
@@ -95,17 +99,51 @@
                 </div>
                 <div class="col-md-3">
                 </div>
-            </div> -->
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 field-label-responsive my-auto">
+                    <div class="input-group-addon float-md-right"><i class="fas fa-lock"></i> Department </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-0">
+                        <select name="department" id="department" class="form-control">
+                            <option value="-1" selected>None</option>
+                            <option value="1">Department 1</option>
+                            <option value="2">Department 2</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <span id="error_department" style="color:red"></span>
+                </div>
+            </div>
+            <div class="row mb-2">
+                <div class="col-md-3 field-label-responsive my-auto">
+                    <div class="input-group-addon float-md-right"><i class="fas fa-lock"></i> Permission</div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-0">
+                        <select name="permission" id="permission" class="form-control">
+                            <option value="-1" selected>None</option>
+                            <option value="1">Level 1</option>
+                            <option value="2">Level 2</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <span id="error_permission" style="color:red"></span>
+                </div>
+            </div>
 
-            <!-- <div class="row mb-2 px-0 mx-0 justify-content-center">
+            <div class="row mb-2 px-0 mx-0 justify-content-center">
                 <div id="image-list"  class="col-12 row mx-0 justify-content-center">
                 </div>
                 <div class="text-center text-secondary">- Click image to remove it</div>
-            </div> -->
+            </div>
 
             <div class="row justify-content-center mb-5">
                 <button type="submit"  class="btn btn-success mx-2"><i class="fa fa-user-plus"></i> Add</button>
-                <button type="button" class="btn btn-secondary mx-2"><i class="fas fa-eraser"></i> Cancel</button>
+                <a href="/user"><button type="button" class="btn btn-secondary mx-2"><i class="fas fa-eraser"></i> Cancel</button></a>
            
             </div>
         </form>
@@ -116,17 +154,34 @@
 <script>
 
     function validateForm(){
+        var check=true;
         // if(document.getElenmentById('#status').value)
         var status=document.getElementById('status').textContent;
+        var name=document.getElementById('Name').value;
+        var deparment=document.getElementById('department');
+            deparment=deparment.options[deparment.selectedIndex].value;
+        var permission = document.getElementById('permission');
+            permission = permission.options[permission.selectedIndex].value;
         console.log(status);
-        if(status=="waiting......"){
-            document.getElementById('error').innerHTML="card is not accepted";
-            // alert('okokokok');
-            return false;
+        console.log("name:", name);
+        // if(status=="waiting......"){
+        //     document.getElementById('error').innerHTML="card is not accepted";
 
+        //     check=false;
+        // }
+        if(name==""){
+            document.getElementById('error_name').innerHTML="Space is not allowed";
+            check=false;
         }
-        return true;
-
+        if(deparment==-1){
+            document.getElementById('error_department').innerHTML="you haven't choiced room yet!";
+            check=false;
+        }
+        if(permission==-1){
+            document.getElementById('error_permission').innerHTML="you haven't choiced permission yet!"
+        }
+        if(check) return true;
+        return false;
     }
 
 

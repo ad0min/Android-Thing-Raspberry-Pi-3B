@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>card</title>
+	<link rel="icon" type="image/png" href="image/favicon.ico" />
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+	<link rel="stylesheet" href="/css/styles.css" />
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-custom">
+		<a class="navbar-brand" href="/home">
+			<h2>Raspberry Pi</h2>
+		</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+		 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="/home">Home </a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="/log">Log</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link " href="/user">User</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link " href="/department">Department</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link " href="/door">Door</a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link " href="/permission">Permission</a>
+				</li>
+			</ul>
+			<form class="form-inline my-2 my-lg-0" action="/logout" method="post">
+				<button class="btn btn-dark my-2 my-sm-0" type="submit">Logout</button>
+			</form>
+		</div>
+	</nav>
+
+	<div class="row justify-content-center my-5 mx-3">
+		<a href="/add-user">
+			<button  class="btn btn-success mx-3 my-1">
+					<i class="fas fa-plus"></i> Add New user
+				</button>
+		</a>
+
+
+		<button class="btn btn-info mx-3 my-1">
+			<i class="fas fa-sync-alt"></i> Sync with Device
+		</button>
+	
+	</div>
+	
+	<table class="table">
+		<thead>
+			<th>Name</th>
+			<th>Avatar</th>
+			<th>Department</th>
+			<th>Permission</th>
+			<th>Action</th>
+		</thead>
+		<%
+		<!-- console.log(users); -->
+		for(let i = 0;i<users.length;i++){%>
+		<%  const user = users[i];
+			let status = "Authen";
+			let color = "text-success";
+			let blockText = "Block";
+			let blockColor = "btn-danger";
+			let blockIcon = "fa-lock";
+			if(user.status == 0){
+				status = "Blocked";
+				color = "text-danger";
+				blockText = "Unblock";
+				blockColor = "btn-success";
+				blockIcon = "fa-unlock-alt";
+			}
+			let rowColor = "";
+			let image = "";
+			if(user.images.length >0){
+				image = user.images[0];
+			}
+			if(i % 2 == 1){
+				rowColor = "table-info";
+			}
+					%>
+		<tr class="<%=rowColor%>">
+			<td>
+				<%=user.name%>
+			</td>
+			<td>
+				<img class="user-item-image" src="<%=image%>"/>
+			</td>
+			<!-- <td>
+				<%=user.name%>
+			</td> -->
+			<td class="<%=color%>">
+				<%=user.department%>
+			</td>
+			<td class="<%=color%>">
+				<%=user.permission%>
+			</td>
+			<td>
+					<a href="#" class="btn btn-info btn-sm my-1">
+							<i class="fas fa-edit"></i> Edit 
+					</a>
+					<a href="/delete-person?id=<%=user.id%>" class="btn btn-danger btn-sm my-1">
+							<i class="fas fa-trash-alt"></i> Delete 
+					</a>
+			</td>
+		</tr>
+		<%}%>
+	</table>
+
+		</div>
+</body>
+
+<script type="text/javascript">
+	console.log(users);
+</script>
+
+</html>
