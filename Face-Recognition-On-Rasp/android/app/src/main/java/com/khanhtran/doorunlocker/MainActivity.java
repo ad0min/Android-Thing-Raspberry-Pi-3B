@@ -8,6 +8,7 @@ import android.media.ImageReader;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
+import android.util.Base64;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -15,11 +16,25 @@ import com.google.android.things.pio.Gpio;
 import com.google.android.things.pio.PeripheralManager;
 import com.google.android.things.pio.SpiDevice;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 public class MainActivity extends Activity {
+    private TakePictureListener mTakePictureListener;
+
+    interface TakePictureListener{
+        void onSuccess(byte[] data);
+        void onError();
+    }
+
     private DoorbellCamera mCamera;
     /**
      * A {@link Handler} for running Camera tasks in the background.
@@ -230,14 +245,27 @@ public class MainActivity extends Activity {
                     @Override
                     public void run() {
                         image.setImageBitmap(bmp);
+
+                        if(mTakePictureListener != null){
+                            mTakePictureListener.onSuccess(imageBytes);
+                        }
                     }
                 });
+                return;
             } catch (Exception ex) {
                 Log.e("iot", ex.getMessage());
             }
         } else {
             Log.d("iot", "Take picture error");
         }
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if(mTakePictureListener != null){
+                    mTakePictureListener.onError();
+                }
+            }
+        });
     }
 
     private void openDoor() {
@@ -336,26 +364,51 @@ public class MainActivity extends Activity {
         }
         mCardManager.readFromCard(new CardManager.OnResult<String>() {
             @Override
-            public void onSuccess(String data) {
+            public void onSuccess(final String userId) {
                 Log.d("iot", "read data from card success");
-                Log.d("iot", "Data: " + data);
+                Log.d("iot", "Data: " + userId);
                 if(mIsLockedDoor){
                     Log.d("iot", "Door is locked: ");
                     return;
                 }
 
-                Command command = new Command();
+                final Command command = new Command();
                 command.setCode(Command.CHECK_USER_PERMISSION);
-                command.setData1(data);
                 mCurrentCommand = command;
-                mServerManager.sendCommand(command);
+                mTakePictureListener = new TakePictureListener() {
+                    @Override
+                    public void onSuccess(byte[] data) {
+                        JSONObject sendData = new JSONObject();
+                        try {
+                            sendData.put("id",userId);
+                            sendData.put("buffer", encodeImage(data));
+                            command.setData1(sendData.toString());
+                        } catch (Exception ex){
+                            return;
+                        }
+                        mServerManager.sendCommand(command);
+                    }
+
+                    @Override
+                    public void onError() {
+                        JSONObject sendData = new JSONObject();
+                        try {
+                            sendData.put("id",userId);
+                            command.setData1(sendData.toString());
+                        } catch (Exception ex){
+                            return;
+                        }
+                        mServerManager.sendCommand(command);
+                    }
+                };
+                takePicture();
                 if (mIsReading) {
                     mHandler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
                             readFromCard();
                         }
-                    }, 800);
+                    }, 1000);
                 }
             }
 
@@ -368,7 +421,7 @@ public class MainActivity extends Activity {
                         public void run() {
                             readFromCard();
                         }
-                    }, 800);
+                    }, 1000);
                 }
             }
         });
@@ -450,6 +503,14 @@ public class MainActivity extends Activity {
 
     private void stopFlashLed() {
         mAllowFlashStatus = false;
+    }
+
+
+    private String encodeImage(byte[] data)
+    {
+        String encImage = Base64.encodeToString(data, Base64.DEFAULT);
+        //Base64.de
+        return encImage;
     }
 
 }
