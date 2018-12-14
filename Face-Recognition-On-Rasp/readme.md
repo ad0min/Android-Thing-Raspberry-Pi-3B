@@ -33,6 +33,7 @@ Run Server
 ```
 git clone https://github.com/ad0min/Android-Thing-Raspberry-Pi-3B.git
 ```
+2. Navigator to folder source Face Recognition App ```cd Face-Recognition-On-Rasp```
 2. Direct to Server folder: ```cd server```
 2. Create new file `.env` by copy file `.env-example`
 3. Make sure that your computer have installed Nodejs, ...
@@ -44,5 +45,7 @@ git clone https://github.com/ad0min/Android-Thing-Raspberry-Pi-3B.git
 username = 'admin'
 password = 'admin'
 ``` 
+
+### Connect rasp pi to Server
 Build and Run app AndroidThing in raspberry 
-```Change ip, port in file Config```
+```Change Ip, Port by Ip, Port of server in file Config```
