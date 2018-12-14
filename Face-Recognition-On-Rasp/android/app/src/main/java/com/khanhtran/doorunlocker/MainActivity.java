@@ -118,7 +118,7 @@ public class MainActivity extends Activity {
         mServerManager = new ServerManager(DefaultConfig.SERVER_ADDRESS, DefaultConfig.SERVER_PORT);
         mServerManager.setEventListener(new ServerManager.EventListener() {
             @Override
-            public void onReceived(Command command) {
+            public void onReceived(final Command command) {
                 Log.d("iot", "Received command at main: " + command.toString());
                 switch (command.getCode()) {
                     case Command.OPEN_DOOR:
@@ -134,6 +134,36 @@ public class MainActivity extends Activity {
                         unlockDoor();
                         break;
                     case Command.REQUEST_TAKE_PICTURE:
+                        mTakePictureListener = new TakePictureListener() {
+                            @Override
+                            public void onSuccess(byte[] data) {
+                                Command command1 = new Command();
+                                command1.setCode(Command.SUCCESS);
+                                JSONObject sendData = new JSONObject();
+                                try {
+                                    sendData.put("request_code",Command.REQUEST_TAKE_PICTURE);
+                                    sendData.put("buffer", encodeImage(data));
+                                    command1.setData1(sendData.toString());
+                                } catch (Exception ex){
+                                    return;
+                                }
+                                mServerManager.sendCommand(command1);
+                            }
+
+                            @Override
+                            public void onError() {
+                                Command command1 = new Command();
+                                command1.setCode(Command.ERROR);
+                                JSONObject sendData = new JSONObject();
+                                try {
+                                    sendData.put("request_code",Command.REQUEST_TAKE_PICTURE);
+                                    command1.setData1(sendData.toString());
+                                } catch (Exception ex){
+                                    return;
+                                }
+                                mServerManager.sendCommand(command1);
+                            }
+                        };
                         takePicture();
                         break;
                     case Command.SUCCESS:
@@ -333,10 +363,14 @@ public class MainActivity extends Activity {
             @Override
             public void onSuccess(Void data) {
                 Log.d("iot", "Write successfully");
-
                 Command command = new Command();
                 command.setCode(Command.SUCCESS);
-                command.setData1(String.valueOf(Command.REQUEST_WRITE_DATA));
+                JSONObject sendData = new JSONObject();
+                try {
+                    sendData.put("request_code",Command.REQUEST_WRITE_DATA);
+                } catch (Exception ex){
+                    return;
+                }
                 mIsReading = true;
                 readFromCard();
             }

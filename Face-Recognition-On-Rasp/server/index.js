@@ -20,6 +20,7 @@ const permissionModel = mongoose.model(modelType.permissionType);
 const {CODE_REQUEST_UNLOCK_DOOR, CODE_AUTHEN, CODE_REQUEST_CLOSE_DOOR, CODE_ERROR, CODE_REQUEST_LOCK_DOOR, CODE_REQUEST_OPEN_DOOR, CODE_RASP_INFO, CODE_CHECK_PERMISION_CARD, CODE_REQUEST_RASP_INFO, CODE_REQUEST_TAKE_PICTURE, CODE_REQUEST_WRITE_CARD, CODE_SUCCESS, MESSAGE_SUCCESS} = require('./const');
 
 const socketList = {};
+let takePictureCallback;
 
 app.get('/', function(req, res){
     res.sendFile(__dirname + '/index.html');
@@ -78,8 +79,8 @@ io.on('connection', socket => {
                             if (parseInt(permissionData.permission) >= parseInt(doorId)){
                                 //   console.log(data.buffer);
                                 var buf = new Buffer(data.buffer.replace(/^data:image\/\w+;base64,/, ""),'base64');
-                                const imageUrl = 'images/log/' + userData.name + userData.id + '_' + Date.now() + '.png';
-                                var imagePath = './public/' + imageUrl; 
+                                const imageUrl = '/images/log/' + userData.name + userData.id + '_' + Date.now() + '.png';
+                                var imagePath = './public' + imageUrl; 
                                 console.log('Image log url',imagePath);
                                 fs.writeFile(imagePath, buf,(err)=>{
                                     console.log('Write file result',err);
@@ -98,7 +99,7 @@ io.on('connection', socket => {
                                     log.doorId = doorData._id;
                                     log.doorName = doorData.name;
                                 }
-                                // log.timestamp = new Date().getTime();
+                                log.timestamp = new Date().getTime();
                                 logModel.create(log);
 
                                 // const faceDetected = JSON.parse(faceRegconitionHeper.recognize('imageUrl'));
@@ -121,17 +122,24 @@ io.on('connection', socket => {
                 '200':async (socketList, socket, code, data) => {
                     data = JSON.parse(data);
                     var {request_code, buf} = data;
-                    if(request_code === CODE_REQUEST_WRITE_CARD){
+                    if(request_code == CODE_REQUEST_WRITE_CARD){
                         console.log('Write card successfull');
                     }
-                    else if(request_code === CODE_REQUEST_TAKE_PICTURE) {
+                    else if(request_code == CODE_REQUEST_TAKE_PICTURE) {
+                        console.log('Take picture succeffully');
                         var buf = new Buffer(data.buffer.replace(/^data:image\/\w+;base64,/, ""),'base64');
-                        const imageUrl = 'images/take_picture/' + '_' + Date.now() + '.png';
-                        var imagePath = './public/' + imageUrl;
+                        const imageUrl = '/images/take_picture/' + '_' + Date.now() + '.png';
+                        var imagePath = './public' + imageUrl;
                         fs.writeFile(imagePath, buf,(err)=>{
                             console.log('Write file result',err);
                         });
-                        logModel.create({ imageUrl});
+
+                        if(takePictureCallback){
+                            takePictureCallback(imageUrl);
+                            takePictureCallback = undefined;
+                        }
+
+                        // logModel.create({ imageUrl});
                     }
                 },
                 '500': async (socketList, socket, code, data) => {
@@ -200,12 +208,13 @@ function emitWriteToCard(doorId,data) {
     return success;
 }
 
-function emitTakePicture(doorId) {
+function emitTakePicture(doorId,callback) {
     let success = false;
     for(let key in socketList){
         if(socketList[key].doorId == doorId){
             console.log('Emited take the picture ' + doorId);
-            const code = CODE_REQUEST_WRITE_CARD;
+            const code = CODE_REQUEST_TAKE_PICTURE;
+            takePictureCallback = callback;
             socketList[key].socket.emit('event', code + `;Take the picture in door ${doorId}`);
             success = true;
         }

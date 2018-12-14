@@ -63,4 +63,5 @@ fastlane/Preview.html
 fastlane/screenshots
 fastlane/test_output
 fastlane/readme.md
-Face-Recognition-On-Rasp/server/public/image/log/
+Face-Recognition-On-Rasp/server/public/images/log/
+Face-Recognition-On-Rasp/server/public/images/take_picture/
