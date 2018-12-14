@@ -75,36 +75,40 @@ io.on('connection', socket => {
                         const doorId = socketList[socket.id].doorId;
                         const doorData = await doorModel.findById(doorId).exec();
                         if (userData){
-                            //   console.log(data.buffer);
-                            var buf = new Buffer(data.buffer.replace(/^data:image\/\w+;base64,/, ""),'base64');
-                            const imageUrl = 'images/log/' + userData.name + userData.id + '_' + Date.now() + '.png';
-                            var imagePath = './public/' + imageUrl; 
-                            console.log('Image log url',imagePath);
-                            fs.writeFile(imagePath, buf,(err)=>{
-                                console.log('Write file result',err);
-                            });
-                            const log = {userName: userData.name, userId: userData._id};
-                            if(departmentData){
-                                log.departmentId = departmentData._id;
-                                log.departmentName = departmentData.name;
-                            }
-                            log.imageUrl = imageUrl;
-                            if(permissionData){
-                                log.permissionId = permissionData._id;
-                                log.permissionName = permissionData.name;
-                            }
-                            if(doorData){
-                                log.doorId = doorData._id;
-                                log.doorName = doorData.name;
-                            }
-                            // log.timestamp = new Date().getTime();
-                            logModel.create(log);
+                            if (parseInt(permissionData.permission) >= parseInt(doorId)){
+                                //   console.log(data.buffer);
+                                var buf = new Buffer(data.buffer.replace(/^data:image\/\w+;base64,/, ""),'base64');
+                                const imageUrl = 'images/log/' + userData.name + userData.id + '_' + Date.now() + '.png';
+                                var imagePath = './public/' + imageUrl; 
+                                console.log('Image log url',imagePath);
+                                fs.writeFile(imagePath, buf,(err)=>{
+                                    console.log('Write file result',err);
+                                });
+                                const log = {userName: userData.name, userId: userData._id};
+                                if(departmentData){
+                                    log.departmentId = departmentData._id;
+                                    log.departmentName = departmentData.name;
+                                }
+                                log.imageUrl = imageUrl;
+                                if(permissionData){
+                                    log.permissionId = permissionData._id;
+                                    log.permissionName = permissionData.name;
+                                }
+                                if(doorData){
+                                    log.doorId = doorData._id;
+                                    log.doorName = doorData.name;
+                                }
+                                // log.timestamp = new Date().getTime();
+                                logModel.create(log);
 
-                            // const faceDetected = JSON.parse(faceRegconitionHeper.recognize('imageUrl'));
-                            // console.log(faceDetected);
+                                // const faceDetected = JSON.parse(faceRegconitionHeper.recognize('imageUrl'));
+                                // console.log(faceDetected);
 
-                            // logModel.create({name: userData.name, permission: permissionData._id, department: departmentData._id, imageUrl, detected: faceDetected});
-                            callback(CODE_SUCCESS +`;${MESSAGE_SUCCESS}`);
+                                // logModel.create({name: userData.name, permission: permissionData._id, department: departmentData._id, imageUrl, detected: faceDetected});
+                                callback(CODE_SUCCESS +`;${MESSAGE_SUCCESS}`);
+                            }else {
+                                callback(CODE_ERROR +`;You're not enought permision`);
+                            }
                         }
                         else {
                             callback(CODE_ERROR +`;Wrong data`);
