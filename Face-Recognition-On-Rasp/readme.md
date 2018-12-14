@@ -47,5 +47,5 @@ password = 'admin'
 ``` 
 
 ### Connect rasp pi to Server
-Build and Run app AndroidThing in raspberry 
+Build and Run source from folde './android' in raspberry 
 ```Change Ip, Port by Ip, Port of server in file Config```
