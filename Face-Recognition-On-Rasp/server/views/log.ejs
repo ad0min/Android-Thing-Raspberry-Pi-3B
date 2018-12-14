@@ -56,12 +56,14 @@
 			<th>Door</th>
 			<th>Username</th>
 			<th>Image</th>
+			<th>Image Detected</th>
+			<th>Note</th>
 		</thead>
 
 		
 		<%let len = logs.length;
 		for(let i = len-1;i >= 0; i--){%>
-		<%  const log = logs[i];	
+		<%  const log = logs[i];
 		%>
 			<tr>
 					<td><%=log.date%></td>
@@ -70,6 +72,8 @@
 					<td><%=log.doorName%></td>
 					<td><a href="/user?userId=<%=log.userId%>"><%=log.userName%></a></td>
 					<td><a href="<%=log.imageUrl%>">View</a></td>
+					<td><a href="<%=log.imageUrlDetected%>">View</a></td>
+					<td><%=log.detected%></td>
 			</tr>
 		<%}%>
 

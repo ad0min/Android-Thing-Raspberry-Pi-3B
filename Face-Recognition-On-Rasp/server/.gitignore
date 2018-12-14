@@ -4,3 +4,10 @@ database/data/
 database/log/
 
 .env
+
+public/images/log/
+public/images/detected/
+public/images/take_picture/
+public/upload/
+public/take_picture/
+

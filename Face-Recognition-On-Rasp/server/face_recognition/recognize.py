@@ -27,25 +27,25 @@ ap.add_argument("-l", "--le", required=True,
 ap.add_argument("-c", "--confidence", type=float, default=0.5,
 	help="minimum probability to filter weak detections")
 args = vars(ap.parse_args())
-
+# print (args)
 # load our serialized face detector from disk
 # print("[INFO] loading face detector...")
-protoPath = os.path.sep.join([args["detector"], "deploy.prototxt"])
-modelPath = os.path.sep.join([args["detector"],
+protoPath = os.path.sep.join([args["detector"][1:], "deploy.prototxt"])
+modelPath = os.path.sep.join([args["detector"][1:],
 	"res10_300x300_ssd_iter_140000.caffemodel"])
 detector = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
 
-# load our serialized face embedding model from disk
-# print("[INFO] loading face recognizer...")
-embedder = cv2.dnn.readNetFromTorch(args["embedding_model"])
+# # load our serialized face embedding model from disk
+# # print("[INFO] loading face recognizer...")
+embedder = cv2.dnn.readNetFromTorch(args["embedding_model"][1:])
 
-# load the actual face recognition model along with the label encoder
-recognizer = pickle.loads(open(args["recognizer"], "rb").read())
-le = pickle.loads(open(args["le"], "rb").read())
+# # load the actual face recognition model along with the label encoder
+recognizer = pickle.loads(open(args["recognizer"][1:], "rb").read())
+le = pickle.loads(open(args["le"][1:], "rb").read())
 
-# load the image, resize it to have a width of 600 pixels (while
-# maintaining the aspect ratio), and then grab the image dimensions
-imageUrl = args["image"]
+# # load the image, resize it to have a width of 600 pixels (while
+# # maintaining the aspect ratio), and then grab the image dimensions
+imageUrl = args["image"][1:]
 
 image = cv2.imread(imageUrl)
 image = imutils.resize(image, width=600)

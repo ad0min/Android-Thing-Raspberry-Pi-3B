@@ -26,7 +26,11 @@ const logSchema = Schema(
 			index: true,
 		},
 		doorName: String,
-		timestamp:Number
+		timestamp:Number,
+		detected: [{
+			name: String,
+			prob: String,
+		}]
 	}, {
     timestamps: true,
   }

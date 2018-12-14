@@ -70,6 +70,9 @@ app.get('/log', function (req, res) {
 			var month = '0' + date.getMonth();
 			var year = date.getFullYear();
 			item.date = day.slice(-2) + '/' + month.slice(-2) + '/' + year;
+
+			item.imageUrlDetected = item.imageUrl.replace('log', 'detected');
+
 			return item;
 		});
 		console.log('Time',JSON.stringify(result[result.length-1]));

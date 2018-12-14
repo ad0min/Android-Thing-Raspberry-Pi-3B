@@ -8,7 +8,7 @@ const io = require('socket.io')(http);
 const _ = require('lodash');
 var fs = require('fs');
 
-// const faceRegconitionHeper = require('./face_recognition/faceRegconitionHeper');
+const faceRegconitionHeper = require('./face_recognition/faceRegconitionHeper');
 
 const modelType = require('./models/type');
 const doorModel = mongoose.model(modelType.doorType);
@@ -103,12 +103,13 @@ io.on('connection', socket => {
                                     log.doorName = doorData.name;
                                 }
                                 log.timestamp = new Date().getTime();
+
+                                faceRegconitionHeper.recognize(`${imagePath}`, (res) => {
+                                    console.log("DETECT RES: ",res);
+                                    log.detected = res;
+                                });
                                 logModel.create(log);
 
-                                // const faceDetected = JSON.parse(faceRegconitionHeper.recognize('imageUrl'));
-                                // console.log(faceDetected);
-
-                                // logModel.create({name: userData.name, permission: permissionData._id, department: departmentData._id, imageUrl, detected: faceDetected});
                                 callback(CODE_SUCCESS +`;${MESSAGE_SUCCESS}`);
                             }else {
                                 callback(CODE_ERROR +`;You're not enought permision`);

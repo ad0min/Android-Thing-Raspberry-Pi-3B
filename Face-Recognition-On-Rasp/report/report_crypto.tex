@@ -140,31 +140,55 @@ Ho Chi Minh City University of Technology
 \hspace{6mm} Sản phẩm nhóm cung cấp sẽ là hệ thống nhận cho phép xác định đối tượng các tòa nhà, công sở,.... Các trạm ra vào tòa nhà, cũng như các cửa phòng ban sẽ được gắn một đầu đọc thẻ từ RCC và camera tùy vào ưu tiên của vị trí đó. Nhân viên cũng như người sử dụng muốn qua hệ thống an ninh phải đủ quyền hạn ở cống đó. Ngoài ra còn các vị trí tùy vào mức độ ưu tiên sẽ được gắn camera và theo dõi trực tiếp trên trang quản lý hệ thống. Server có thể phát hiện ra danh tính của nhân viên dựa trên hình ảnh thu thập được.
 \section{Chức năng}
 	Một số chức năng:
-\subsection{Nhân viên}
 	\begin{itemize}
-		\item Nhận diện đối tượng con người
-		\item Xác định nếu là người quen
-		\item Gửi thông báo tới điện thoại người sử dụng nếu phát hiện đối tượng lạ xuất hiện
-		\item Người dùng có thể điều khiển từ xa để mở cửa (đèn led sáng)
-		\item Hệ thống sẽ lưu lại nhật ký các sự kiện
+		\item Quét thẻ xác định quyền mở cửa.  
+		\item Có nhiều phòng ban, mỗi phòng ban có nhiều cửa, mỗi cửa có một cấp độ riêng, chỉ những người sở hữu loại thẻ có cùng hoặc cấp độ cao hơn mới có quyền mở cửa.
+		\item Thêm, xóa, cấp quyền cho nhân viên.
+		\item Thêm, xóa, xác định yêu cầu mở cửa cho cửa.
+		\item Thêm, xóa phòng ban và thiết lập quyền.
+		\item Hệ thống ghi lại nhật ký mở cửa bao gồm tên nhân viên, tên cửa, phòng ban và hình ảnh của nhân viên mở cửa.
 	\end{itemize}
-\subsection{Người quản lý}
-
-
 \section{Công cụ sử dụng}
 \subsection{Đầu đọc RCC}
 \subsection{Thẻ từ}
+\hspace{6mm} Là loại là thẻ dùng từ tính để tích hợp với đầu đọc thẻ hoặc máy chấm công cảm ứng. Thường được sử dụng như thẻ ID, thẻ nhân viên, thẻ chấm công, thẻ chìa khóa…rất tiện lợi cho việc chấm công ra vào, tiết kiệm thời gian.
 \subsection{Hệ cơ sở dữ liệu MongoDb}
+\hspace{6mm} Sử dụng hệ cơ sở dữ liệu MongoDb để lưu và truy vấn dữ liệu. Cở sở dữ liệu gồm có:
+\\
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=11cm]{db_diagram.png}
+\\Lược đồ database
+\end{center}
+\end{figure}
 \subsection{Nodejs}
+\hspace{6mm} Nodejs là một nền tảng (Platform) phát triển độc lập được xây dựng ở trên Javascript Runtime của Chrome mà chúng ta có thể xây dựng được các ứng dụng mạng một cách nhanh chóng và dễ dàng mở rộng. Tạo ra được các ứng dụng có thể xử lý nhanh, realtime.
+Nhóm sử dụng nodejs để viết server, công nghệ Socket io để giao tiếp với Raspberry. 
 
 
 \section{Quá trình thử nghiệm}
+\subsection{Hướng dẫn sử dụng}
+\hspace{6mm}
+\begin{itemize}
+    \item Tại thư mục Face-Recognition-ON-Rasp mở terminal chạy lệnh "npm install" để cài các module cần thiết.
+    \item Chạy lệnh "npm start" để khởi động server (nhóm sử dụng package nodemon để server tự cập nhập khi có sửa đổi). Truy cập vào địa chỉ http:\\localhost:3000.
+    \item Nhập user name và password là "admin" để truy cập vào hệ thống.
+    \item Truy cập trang User để nhận được trang List User click vào button add new User để thêm User. tương tự ới các trang Door, Department, Permission.
+    \item Truy cập trang Log để xem nhật ký.
+    \item Dùng thẻ quét qua Raspberry, Raspberry sau khi nhận được id người dùng từ thẻ, sẽ lấy được permission của người dùng từ database, đối chiếu với permission đã được thiết lập trên Rasp và xác định mở hoặc đóng cửa.
+\end{itemize}
+
 
 \subsection{Kết quả}
 \hspace{6mm} Nhóm kiểm tra và hệ thống chạy khá ổn định.
-
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=9cm]{rasp_board.jpg}
+\\Board mạch
+\end{center}
+\end{figure}
 \section{Hướng phát triển}
-Dự án có thể phát triển lên thành sản phẩm dùng trong các hộ gia đình lẫn công ty, cơ quan, nơi công cộng. Các tính nan
+Dự án có thể phát triển lên thành sản phẩm dùng trong các hộ gia đình lẫn công ty, cơ quan, nơi công cộng. Các tính năng sẽ được nâng cấp về sau.
 
 \section{Kết luận}
 Đây là sản phẩm hiệu quả, góp phần vào cuộc cách mạng 4.0 của Việt Nam.

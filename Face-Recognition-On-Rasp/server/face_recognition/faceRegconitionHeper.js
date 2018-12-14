@@ -1,20 +1,20 @@
 const {PythonShell} = require('python-shell');
 
-function recognize(imageUrl){
+function recognize(imageUrl, callback){
   let options = {
     mode: 'text',
-    pythonOptions: ['-u'], // get print results in real-time
     scriptPath: './face_recognition',
-    args: ['--detector face_detection_model', '--embedding-model openface_nn4.small2.v1.t7', '--recognizer output/recognizer.pickle', '--le output/le.pickle', `--image ../${imageUrl}`]
+    args: ['-d face_recognition/face_detection_model', '-m face_recognition/openface_nn4.small2.v1.t7', '-r face_recognition/output/recognizer.pickle', '-l face_recognition/output/le.pickle', `-i ${imageUrl}`]
   };
   
   PythonShell.run('recognize.py', options, function (err, results) {
     if (err) throw err;
     // results is an array consisting of messages collected during execution
     console.log('results: %j', results);
-    return results;
+    return callback(results);
   });
 }
+// recognize('./public/upload/Thành_Đạt-1544754307560-2018-03-24-002852_3.jpg')
 
 
 function extract_embeddings(imageTrainFolder){
