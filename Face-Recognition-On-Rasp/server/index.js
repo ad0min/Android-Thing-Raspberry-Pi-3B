@@ -75,8 +75,11 @@ io.on('connection', socket => {
                         const departmentData = await departmentModel.findById(userData.departmentId).exec();
                         const doorId = socketList[socket.id].doorId;
                         const doorData = await doorModel.findById(doorId).exec();
+                        let doorPermissionData = await permissionModel.findById(doorData.minLevelPermission).exec();
+                        console.log('User data',userData);
+                        console.log('Door permission data',doorPermissionData);
                         if (userData){
-                            if (parseInt(permissionData.permission) >= parseInt(doorId)){
+                            if (parseInt(permissionData.level) >= parseInt(doorPermissionData.level)){
                                 //   console.log(data.buffer);
                                 var buf = new Buffer(data.buffer.replace(/^data:image\/\w+;base64,/, ""),'base64');
                                 const imageUrl = '/images/log/' + userData.name + userData.id + '_' + Date.now() + '.png';

@@ -6,7 +6,7 @@ const { String, Number, ObjectId } = SchemaTypes;
 const permissionSchema = Schema(
   {
     name: String,
-    permission: String,
+    level: String,
   }
 )
 
