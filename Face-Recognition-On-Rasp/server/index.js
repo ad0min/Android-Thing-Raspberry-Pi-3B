@@ -77,7 +77,7 @@ io.on('connection', socket => {
                         if (userData){
                             //   console.log(data.buffer);
                             var buf = new Buffer(data.buffer.replace(/^data:image\/\w+;base64,/, ""),'base64');
-                            const imageUrl = 'image/log/' + userData.name + userData.id + '_' + Date.now() + '.png';
+                            const imageUrl = 'images/log/' + userData.name + userData.id + '_' + Date.now() + '.png';
                             var imagePath = './public/' + imageUrl; 
                             console.log('Image log url',imagePath);
                             fs.writeFile(imagePath, buf,(err)=>{
@@ -97,7 +97,7 @@ io.on('connection', socket => {
                                 log.doorId = doorData._id;
                                 log.doorName = doorData.name;
                             }
-                            log.timestamp = new Date().getTime();
+                            // log.timestamp = new Date().getTime();
                             logModel.create(log);
 
                             // const faceDetected = JSON.parse(faceRegconitionHeper.recognize('imageUrl'));
@@ -115,8 +115,19 @@ io.on('connection', socket => {
                     }
                 },
                 '200':async (socketList, socket, code, data) => {
-                    if(data == CODE_REQUEST_WRITE_CARD){
+                    data = JSON.parse(data);
+                    var {request_code, buf} = data;
+                    if(request_code === CODE_REQUEST_WRITE_CARD){
                         console.log('Write card successfull');
+                    }
+                    else if(request_code === CODE_REQUEST_TAKE_PICTURE) {
+                        var buf = new Buffer(data.buffer.replace(/^data:image\/\w+;base64,/, ""),'base64');
+                        const imageUrl = 'images/take_picture/' + '_' + Date.now() + '.png';
+                        var imagePath = './public/' + imageUrl;
+                        fs.writeFile(imagePath, buf,(err)=>{
+                            console.log('Write file result',err);
+                        });
+                        logModel.create({ imageUrl});
                     }
                 },
                 '500': async (socketList, socket, code, data) => {
@@ -185,6 +196,19 @@ function emitWriteToCard(doorId,data) {
     return success;
 }
 
+function emitTakePicture(doorId) {
+    let success = false;
+    for(let key in socketList){
+        if(socketList[key].doorId == doorId){
+            console.log('Emited take the picture ' + doorId);
+            const code = CODE_REQUEST_WRITE_CARD;
+            socketList[key].socket.emit('event', code + `;Take the picture in door ${doorId}`);
+            success = true;
+        }
+    }
+    return success;
+}
+
 // doorModel.create({name: 'floor 1'});
 // departmentModel.create({name: "department 2"});
 // permissionModel.create({name: "Nhan vien", permission: "100"});
@@ -204,5 +228,6 @@ module.exports = {
     emitCloseDoor,
     emitLockDoor,
     emitUnlockDoor,
-    emitWriteToCard
+    emitWriteToCard,
+    emitTakePicture
 }
