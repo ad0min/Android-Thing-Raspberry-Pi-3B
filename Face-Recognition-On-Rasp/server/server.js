@@ -279,10 +279,6 @@ app.get('/door', function (req, res) {
 					doorId: req.query.id,
 					message: req.query.action + ' ' + req.query.status
 				});
-				console.log({
-					doorId: req.query.id,
-					message: req.query.action + ' ' + req.query.status
-				});
 			})
 		})
 	})
@@ -427,8 +423,11 @@ app.get('/door/unlock', (req, res) => {
 
 app.get('/door/take-picture', (req, res) => {
 	const params = req.query;
-	const id = params["id"];
-	res.redirect('/door?action=Take picture&status=success&id=' + id);
+	const id = params.id;
+	console.log('Call take picture from door id ' + id);
+	socketManager.emitTakePicture(id,(url)=>{
+		res.redirect(url);
+	});
 });
 
 app.post('/write-user', (req, res) => {
@@ -456,4 +455,3 @@ var server = app.listen(3000, function () {
 	console.log("Ung dung Node.js dang lang nghe tai dia chi: http://%s:%s", host, port)
 
 })
-

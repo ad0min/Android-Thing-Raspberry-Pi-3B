@@ -26,10 +26,7 @@ const logSchema = Schema(
 			index: true,
 		},
 		doorName: String,
-		timestamp: {
-			type: Date,
-			default: new Date().getTime(),
-		}
+		timestamp:Number
 	}, {
     timestamps: true,
   }
