@@ -65,3 +65,17 @@ fastlane/test_output
 fastlane/readme.md
 Face-Recognition-On-Rasp/server/public/images/log/
 Face-Recognition-On-Rasp/server/public/images/take_picture/
+
+## Core latex/pdflatex auxiliary files:
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
