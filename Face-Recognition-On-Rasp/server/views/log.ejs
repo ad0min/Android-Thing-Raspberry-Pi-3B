@@ -59,15 +59,19 @@
 		</thead>
 
 		
+		<%let len = logs.length;
+		for(let i = len-1;i >= 0; i--){%>
+		<%  const log = logs[i];	
+		%>
 			<tr>
-					<td></td>
-					<td></td>
-					<td></td>
-					<td><div ></div></td>
-					<td><a href="#"></a></td>
-					<td><a href=""></a></td>
+					<td><%=log.date%></td>
+					<td><%=log.time%></td>
+					<td><%=log.departmentName%></td>
+					<td><%=log.doorName%></td>
+					<td><a href="/user?userId=<%=log.userId%>"><%=log.userName%></a></td>
+					<td><a href="<%=log.imageUrl%>">View</a></td>
 			</tr>
-		
+		<%}%>
 
 	</table>
 

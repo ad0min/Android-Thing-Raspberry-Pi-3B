@@ -1,4 +1,4 @@
-import {PythonShell} from 'python-shell';
+const {PythonShell} = require('python-shell');
 
 function recognize(imageUrl){
   let options = {

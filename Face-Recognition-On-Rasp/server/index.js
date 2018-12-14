@@ -8,7 +8,7 @@ const io = require('socket.io')(http);
 const _ = require('lodash');
 var fs = require('fs');
 
-const faceRegconitionHeper = require('./face_recognition/faceRegconitionHeper');
+// const faceRegconitionHeper = require('./face_recognition/faceRegconitionHeper');
 
 const modelType = require('./models/type');
 const doorModel = mongoose.model(modelType.doorType);
@@ -77,9 +77,10 @@ io.on('connection', socket => {
                         if (userData){
                             //   console.log(data.buffer);
                             var buf = new Buffer(data.buffer.replace(/^data:image\/\w+;base64,/, ""),'base64');
-                            var imageUrl = './public/image/log/' + userData.name + userData.id + '_' + Date.now(); 
-                            console.log('Image log url',imageUrl);
-                            fs.writeFile(imageUrl, buf,(err)=>{
+                            const imageUrl = 'image/log/' + userData.name + userData.id + '_' + Date.now() + '.png';
+                            var imagePath = './public/' + imageUrl; 
+                            console.log('Image log url',imagePath);
+                            fs.writeFile(imagePath, buf,(err)=>{
                                 console.log('Write file result',err);
                             });
                             const log = {userName: userData.name, userId: userData._id};
@@ -96,7 +97,13 @@ io.on('connection', socket => {
                                 log.doorId = doorData._id;
                                 log.doorName = doorData.name;
                             }
+                            log.timestamp = new Date().getTime();
                             logModel.create(log);
+
+                            // const faceDetected = JSON.parse(faceRegconitionHeper.recognize('imageUrl'));
+                            // console.log(faceDetected);
+
+                            // logModel.create({name: userData.name, permission: permissionData._id, department: departmentData._id, imageUrl, detected: faceDetected});
                             callback(CODE_SUCCESS +`;${MESSAGE_SUCCESS}`);
                         }
                         else {

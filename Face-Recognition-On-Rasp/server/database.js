@@ -14,6 +14,10 @@ function getPersons() {
     return userModel.find();
 }
 
+function getPerson(id){
+    return userModel.find({_id: id});
+}
+
 function deletePerson(id) {
     return userModel.deleteOne({_id:id});
 }
@@ -70,4 +74,5 @@ module.exports = {
     deleteDepartment,
     deletePermission,
     deleteDoor,
+    getPerson
 }

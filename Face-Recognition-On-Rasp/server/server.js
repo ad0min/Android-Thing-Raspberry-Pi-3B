@@ -70,10 +70,10 @@ app.get('/log', function (req, res) {
 			var month = '0' + date.getMonth();
 			var year = date.getFullYear();
 			item.date = day.slice(-2) + '/' + month.slice(-2) + '/' + year;
-
 			return item;
 		});
-		console.log('Log data',result);
+		console.log('Time',JSON.stringify(result[result.length-1]));
+		// console.log('Log data',result);
 		res.render("log", { logs: result });
 	}).catch(err => {
 
@@ -90,7 +90,14 @@ app.get('/log', function (req, res) {
 // });
 
 app.get('/user', function (req, res) {
-	database.getPersons().then(users => {
+	const id = req.query.userId;
+	let dataPromise;
+	if(id){
+		dataPromise = database.getPerson(id);
+	} else{
+		dataPromise = database.getPersons();
+	}
+	dataPromise.then(users => {
 		database.getPermission().then(permissions => {
 			database.getDepartment().then(departments => {
 				database.getDoor().then(doors => {

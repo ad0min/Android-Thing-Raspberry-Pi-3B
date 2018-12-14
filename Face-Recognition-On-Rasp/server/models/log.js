@@ -25,7 +25,8 @@ const logSchema = Schema(
 			type: ObjectId,
 			index: true,
 		},
-		doorName: String
+		doorName: String,
+		timestamp: Number
 	}, {
     timestamps: true,
   }
